@@ -15,6 +15,8 @@ import argparse
 import logging
 import socket 
 
+import scapy as s
+
 # - logging configuration
 logging.basicConfig()
 logger = logging.getLogger('probe')
@@ -38,18 +40,10 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         pass
 
     def getPacketData(self, path):
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        global HOST, PORT
-        s.bind((HOST, PORT))
-        s.listen(1)
-        while True:
-          data, addr = s.recvfrom(65565)
-          if data:
-            yield gnmi_pb2.Update(path=path, val=data)
-          if not data:
-            break
-        print "Done receiving data."
+        yield s.sniff(iface='eth1', prn=processPacket)
+    
+    def processPacket(packet, path):
+        return gnmi_pb2.Update(path=path,val=typedValue)
 
     def Subscribe(self, request_iterator, context):
 

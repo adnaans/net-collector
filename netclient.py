@@ -38,6 +38,8 @@ db_host = 'localhost'
 db_port = 4242
 metrics = potsdb.Client(db_host, port=db_port)
 
+counter = 0
+
 unproductivewebsites=["facebook.com"]
 
 def encodePath(path):
@@ -50,15 +52,24 @@ def encodePath(path):
         pathStrs = pathStrs + "." + pstr
     return pathStrs[1:]
 
-def saveToTSDB(response):
+def processPacket(response): #consider making a batch
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        value = update.val.int_val 
-        metrics.send(path_metric, value, timestamp=tm)
-        logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, value))
+        packet = update.val
+        print(packet)
+        counter=counter+1
+        if(getSource(packet) in badsites or getDest(packet) in badsites): #consider hashset
+            badcounter=badcounter+1
+        
+        if(counter==100):
+            processSites(badcounter)
+            counter=0
+            badcounter=0
 
-
+def processSites(ptg):
+    if ptg > 20:
+        backToWork()
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""
@@ -71,13 +82,14 @@ def getSource(packet):
         src_addr=packet[scapy.IP].src
     
     source = socket.gethostbyaddr(src_addr)
+    return source
 
 def getDest(packet):
     if scapy.IP in packet:
         dst_addr=packet[scapy.IP].dst
     
     dest = socket.gethostbyaddr(dst_addr)
-
+    return dest
 
 def subscribe(stub, path_str, mode, metadata):
     global nums
@@ -88,7 +100,7 @@ def subscribe(stub, path_str, mode, metadata):
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
             logger.debug(response)
-            saveToTSDB(response)
+            processPacket(response)
             i += 1
             nums = i
     except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception

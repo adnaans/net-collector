@@ -1,6 +1,5 @@
 """
-Simple Collector, accept gNMI calls from test client and initiate new gNMI calls
-to Probes. Behaves as gNMI server to the test client and gNMI client to the probes
+Simple Collector, initiates gNMI calls to multiple fun_probes and aggregates   
 """
 
 import gnmi.gnmi_pb2_grpc as gnmi_pb2_grpc
@@ -13,6 +12,7 @@ import time
 import logging
 import argparse
 
+
 # - logging configuration
 logging.basicConfig()
 logger = logging.getLogger('collector')
@@ -20,8 +20,12 @@ logger = logging.getLogger('collector')
 logger.setLevel(logging.DEBUG)
 
 #configure southbound device address
-device_ip = "localhost"
-device_port = 80049
+device1_ip = "localhost"
+device1_port = 80049
+
+device2_ip = "localhost"
+device2_port = 80051
+
 host_ip = "localhost"
 host_port = 80050
 
@@ -29,7 +33,7 @@ interval = 1
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-class FunCollectorServicer(gnmi_pb2_grpc.gNMIServicer):
+class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def __init__(self):
         #initiate an empty pathtree for storing updates from the probes
@@ -37,11 +41,20 @@ class FunCollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def Subscribe(self, request_iterator, context):
         #create a channel connecting to the southbound device
-        channel = grpc.insecure_channel(device_ip + ":" + str(device_port))
-        stub = gnmi_pb2.gNMIStub(channel)
+        channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
+        stub1 = gnmi_pb2.gNMIStub(channel)
         counter = 0
+
+        channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
+        stub2 = gnmi_pb2.gNMIStub(channel)
         global interval
         #start streaming
+        stubs = [stub1, stub2]
+        result = map(aggregate, stubs)
+
+        print "Streaming done!"
+
+    def aggregate(stub):
         for response in stub.Subscribe(request_iterator):
             logger.debug(response)
             if response.update:
@@ -51,21 +64,9 @@ class FunCollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             counter+=1
             logger.debug("pathtree snapshot:")
             logger.debug(self.ptree.dic)
-            if(counter >= interval): 
-                self.getAverage(response, interval)
-                counter = 0
+            if (counter>=interval):
                 yield response
-        print "Streaming done!"
-    
-    def getAverage(self, response, interval):
-        noti = response.update
-        updates = noti.update
-        for u in updates:
-            path = u.path
-            pathStrs = self.encodePath(path.elem)
-            average = self.ptree.getAverage(pathStrs, interval)
-            u.val.int_val = average
-
+            print "Streaming done!"
     
     def saveToPathTree(self, update):
         tm = update.timestamp
@@ -94,7 +95,9 @@ def serve():
                         help='OpenConfig server host')
     parser.add_argument('--port', type=int, default=80050,
                         help='OpenConfig server port')
-    parser.add_argument('--device_port', type=int, default=80049,
+    parser.add_argument('--device1_port', type=int, default=80049,
+                        help='OpenConfig device port')
+    parser.add_argument('--device2_port', type=int, default=80051,
                         help='OpenConfig device port')
     parser.add_argument('--sample', type=int, default=1,
                         help='how many messages to be aggregated')

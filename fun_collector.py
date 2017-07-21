@@ -12,6 +12,9 @@ import time
 import logging
 import argparse
 
+from multiprocessing import Pool
+from multiprocessing.dummy import Pool as ThreadPool
+
 
 # - logging configuration
 logging.basicConfig()
@@ -49,24 +52,23 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         stub2 = gnmi_pb2.gNMIStub(channel)
         global interval
         #start streaming
+        pool = ThreadPool(2)
         stubs = [stub1, stub2]
-        result = map(aggregate, stubs)
+        global PACKET_LIST
+        PACKET_LIST = pool.map(stream, stubs)
 
         print "Streaming done!"
 
-    def aggregate(stub):
+    def stream(stub):
+        if (len(PACKET_LIST)>=interval):
+            savetoPathTree(PACKET_LIST)
+            PACKET_LIST.clear()
         for response in stub.Subscribe(request_iterator):
             logger.debug(response)
             if response.update:
-                self.saveToPathTree(response.update)
+                return response.update
             else:
                 pass
-            counter+=1
-            logger.debug("pathtree snapshot:")
-            logger.debug(self.ptree.dic)
-            if (counter>=interval):
-                yield response
-            print "Streaming done!"
     
     def saveToPathTree(self, update):
         tm = update.timestamp
@@ -104,9 +106,11 @@ def serve():
     parser.add_argument('--debug', type=str, default='on', help='debug level')
     args = parser.parse_args()
 
-    global device_port
+    global device1_port
+    global device2_port
     global interval
-    device_port = args.device_port
+    device1_port = args.device1_port
+    device2_port = args.device2_port
     interval = args.sample
 
     if args.debug == "off":

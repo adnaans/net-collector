@@ -40,7 +40,8 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         pass
 
     def getPacketData(self, path):
-        yield s.sniff(iface='eth1', prn=processPacket)
+        global interface
+        yield s.sniff(iface=interface, prn=processPacket)
     
     def processPacket(packet, path):
         return gnmi_pb2.Update(path=path,val=typedValue)
@@ -75,12 +76,15 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
 def serve():
   parser = argparse.ArgumentParser()
   parser.add_argument('--host', default='localhost',help='OpenConfig server host')
-  parser.add_argument('--port', default=80049,help='OpenConfig server port')
+  parser.add_argument('--port', default=1080,help='OpenConfig server port')
   parser.add_argument('--time', default=1,help='data generating frequency')
   parser.add_argument('--debug', type=str, default='on', help='debug level')
+  parser.add_argument('--interface', default='eth0', help='interface for probe to sniff')
   args = parser.parse_args()
 
   global time_frequency
+  global interface = args.interface
+
   time_frequency = float(args.time)
 
   if args.debug == "off":

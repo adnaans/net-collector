@@ -15,7 +15,7 @@ import argparse
 import logging
 import socket 
 
-import scapy
+from scapy.all import *
 
 # - logging configuration
 logging.basicConfig()
@@ -26,7 +26,7 @@ logger.setLevel(logging.DEBUG)
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 host='localhost'
-port=80049
+port=9030
 time_frequency = 1.0
 
 #gNMI service which provides all rpc calls for gNMI client 
@@ -69,7 +69,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
 def serve():
   parser = argparse.ArgumentParser()
   parser.add_argument('--host', default='localhost',help='OpenConfig server host')
-  parser.add_argument('--port', default=1080,help='OpenConfig server port')
+  parser.add_argument('--port', default=9030,help='OpenConfig server port')
   parser.add_argument('--time', default=1,help='data generating frequency')
   parser.add_argument('--debug', type=str, default='on', help='debug level')
   parser.add_argument('--interface', default='', help='interface for probe to sniff')
@@ -77,9 +77,10 @@ def serve():
   args = parser.parse_args()
 
   global time_frequency
-  global interface = args.interface
+  global interface 
 
   time_frequency = float(args.time)
+  interface = args.interface
 
   if args.debug == "off":
        logger.setLevel(logging.INFO)

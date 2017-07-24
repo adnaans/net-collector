@@ -15,7 +15,7 @@ import argparse
 import logging
 import socket 
 
-import scapy as s
+import scapy
 
 # - logging configuration
 logging.basicConfig()
@@ -40,29 +40,21 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         pass
 
     def getPacketData(self, path):
-        global interface
-        yield s.sniff(iface=interface, prn=processPacket)
-    
-    def processPacket(packet, path):
-        return gnmi_pb2.Update(path=path,val=typedValue)
+        packets = scapy.sniff(count=10)
+        return gnmi_pb2.Update(path=path, val=packets)
 
     def Subscribe(self, request_iterator, context):
-
         tag = 0
         for request in request_iterator:
             sublist = request.subscribe.subscription
-            mode = request.subscribe.mode 
-             
+            mode = request.subscribe.mode    
             while(1):
                 update_msg = []
                 for sub in sublist:
-                    update_msg.append(self.getPacketData(sub.path))
+                    update_msg.append(update_msg=self.getPacketData(sub.path))
                 tm = int(time.time() * 1000)
-                noti = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
-                time.sleep(time_frequency)
-                logger.debug("Generate new update : " )
-                logger.debug(noti)
-                yield gnmi_pb2.SubscribeResponse(update=noti)
+                notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
+                yield gnmi_pb2.SubscribeResponse(update=notif)
                 if mode == 0:
                     continue
                 else:
@@ -79,7 +71,8 @@ def serve():
   parser.add_argument('--port', default=1080,help='OpenConfig server port')
   parser.add_argument('--time', default=1,help='data generating frequency')
   parser.add_argument('--debug', type=str, default='on', help='debug level')
-  parser.add_argument('--interface', default='eth0', help='interface for probe to sniff')
+  parser.add_argument('--interface', default='h1-eth0', help='interface for probe to sniff')
+
   args = parser.parse_args()
 
   global time_frequency

@@ -61,6 +61,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def stream(stub):
         if (len(PACKET_LIST)>=interval):
+            print PACKET_LIST
             savetoPathTree(PACKET_LIST)
             PACKET_LIST.clear()
         for response in stub.Subscribe(request_iterator):
@@ -129,4 +130,4 @@ def serve():
         server.stop(0)
 
 if __name__ == '__main__':
-    serve()
+    serve()s

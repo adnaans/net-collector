@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-pulls socket data, feeds to collector through gNMI
+pulls packet data, feeds to collector through gNMI
 
 """
 import grpc
@@ -41,6 +41,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def getPacketData(self, path):
         packets = scapy.sniff(count=10)
+        print packets
         return gnmi_pb2.Update(path=path, val=packets)
 
     def Subscribe(self, request_iterator, context):
@@ -71,7 +72,7 @@ def serve():
   parser.add_argument('--port', default=1080,help='OpenConfig server port')
   parser.add_argument('--time', default=1,help='data generating frequency')
   parser.add_argument('--debug', type=str, default='on', help='debug level')
-  parser.add_argument('--interface', default='h1-eth0', help='interface for probe to sniff')
+  parser.add_argument('--interface', default='', help='interface for probe to sniff')
 
   args = parser.parse_args()
 

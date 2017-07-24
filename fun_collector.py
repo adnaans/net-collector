@@ -23,14 +23,14 @@ logger = logging.getLogger('collector')
 logger.setLevel(logging.DEBUG)
 
 #configure southbound device address
-device1_ip = "localhost"
-device1_port = 80049
+device1_ip = "" #h1.IP()
+device1_port = 9030
 
-device2_ip = "localhost"
-device2_port = 80051
+device2_ip = "" #h2.IP()
+device2_port = 9031
 
 host_ip = "localhost"
-host_port = 80050
+host_port = 9032
 
 interval = 1
 
@@ -46,7 +46,6 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         #create a channel connecting to the southbound device
         channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
         stub1 = gnmi_pb2.gNMIStub(channel)
-        counter = 0
 
         channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
         stub2 = gnmi_pb2.gNMIStub(channel)
@@ -96,22 +95,18 @@ def serve():
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='localhost',
                         help='OpenConfig server host')
-    parser.add_argument('--port', type=int, default=80050,
+    parser.add_argument('--port', type=int, default=9032,
                         help='OpenConfig server port')
-    parser.add_argument('--device1_port', type=int, default=80049,
-                        help='OpenConfig device port')
-    parser.add_argument('--device2_port', type=int, default=80051,
-                        help='OpenConfig device port')
+
+    parser.add_argument('--devicehosts', type=list, default=[])
+    parser.add_argument('--deviceports', type=list, default=[9030, 9031])
+
     parser.add_argument('--sample', type=int, default=1,
                         help='how many messages to be aggregated')
     parser.add_argument('--debug', type=str, default='on', help='debug level')
     args = parser.parse_args()
 
-    global device1_port
-    global device2_port
     global interval
-    device1_port = args.device1_port
-    device2_port = args.device2_port
     interval = args.sample
 
     if args.debug == "off":
@@ -130,4 +125,4 @@ def serve():
         server.stop(0)
 
 if __name__ == '__main__':
-    serve()s
+    serve()

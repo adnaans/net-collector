@@ -34,6 +34,8 @@ host_port = 9032
 
 interval = 1
 
+SIZE_OF_BATH = 500
+
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
@@ -58,7 +60,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         print "Streaming done!"
 
     def stream(stub):
-        if (len(PACKET_LIST)>=500):
+        if (len(PACKET_LIST)>=SIZE_OF_BATCH):
             print PACKET_LIST
             savetoPathTree(PACKET_LIST)
             PACKET_LIST.clear()

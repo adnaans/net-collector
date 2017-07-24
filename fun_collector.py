@@ -49,7 +49,6 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
         channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
         stub2 = gnmi_pb2.gNMIStub(channel)
-        global interval
         #start streaming
         pool = ThreadPool(2)
         stubs = [stub1, stub2]
@@ -59,7 +58,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         print "Streaming done!"
 
     def stream(stub):
-        if (len(PACKET_LIST)>=interval):
+        if (len(PACKET_LIST)>=500):
             print PACKET_LIST
             savetoPathTree(PACKET_LIST)
             PACKET_LIST.clear()
@@ -108,6 +107,10 @@ def serve():
 
     global interval
     interval = args.sample
+    device1_port = args.deviceports[0]
+    print device1_port
+    device2_port = args.deviceports[1]
+    print device2_port
 
     if args.debug == "off":
         logger.setLevel(logging.INFO)

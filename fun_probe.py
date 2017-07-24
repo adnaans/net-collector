@@ -13,9 +13,9 @@ from random import randint
 import argparse
 
 import logging
-import socket 
 
 from scapy.all import *
+
 
 # - logging configuration
 logging.basicConfig()
@@ -27,7 +27,7 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 host='localhost'
 port=9030
-time_frequency = 1.0
+time_frequency = 0.001
 
 #gNMI service which provides all rpc calls for gNMI client 
 class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
@@ -40,7 +40,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         pass
 
     def getPacketData(self, path):
-        packets = scapy.sniff(count=10)
+        packets = scapy.sniff(timeout=5)
         print packets
         return gnmi_pb2.Update(path=path, val=packets)
 
@@ -52,7 +52,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
             while(1):
                 update_msg = []
                 for sub in sublist:
-                    update_msg.append(update_msg=self.getPacketData(sub.path))
+                    update_msg.append(self.getPacketData(sub.path))
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                 yield gnmi_pb2.SubscribeResponse(update=notif)

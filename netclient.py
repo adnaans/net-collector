@@ -18,13 +18,12 @@ import grpc.framework.interfaces.face
 import pyopenconfig.gnmi_pb2
 import pyopenconfig.resources
 
-import potsdb
 import atexit
 from scapy.all import *
 
 # - logging configuration
 logging.basicConfig()
-logger = logging.getLogger('test-client')
+logger = logging.getLogger('netclient')
 
 logger.setLevel(logging.DEBUG)
 
@@ -95,12 +94,12 @@ def subscribe(stub, path_str, mode, metadata):
     """Subscribe and echo the stream"""
     logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
     subscribe_request = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
-    i = 0
+    i = 500
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
             logger.debug(response)
             processPacket(response)
-            i += 1
+            i += 500
             nums = i
     except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception
         if error.code == grpc.StatusCode.OUT_OF_RANGE and error.details == 'EOF':
@@ -127,8 +126,8 @@ def run():
     """Main loop"""
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='localhost',
-                        help='OpenConfig server host')
-    parser.add_argument('--port', type=int, default=80051,
+                        help='OpenConfig server host') #on mininet host's IP 
+    parser.add_argument('--port', type=int, default=9033,
                         help='OpenConfig server port')
     parser.add_argument('--username', type=str, help='username')
     parser.add_argument('--password', type=str, help='password')

@@ -28,19 +28,20 @@ logger = logging.getLogger('test-client')
 
 logger.setLevel(logging.DEBUG)
 
-host_ip = "" #h4.IP()
-host_port = 9033
+host_ip = "localhost"
+host_port = 80050
 
 mode = "stream"
 nums = 0
 
-#db_host = 'localhost'
-#db_port = 4242
-#metrics = potsdb.Client(db_host, port=db_port)
+db_host = 'localhost'
+db_port = 4242
+metrics = potsdb.Client(db_host, port=db_port)
 
 counter = 0
+badcounter = 0
 
-badsites= set("facebook.com") 
+unproductivewebsites=["facebook.com"]
 
 def encodePath(path):
     pathStrs = "" 
@@ -56,19 +57,26 @@ def processPacket(response): #consider making a batch
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        packets = update.val
-        print(packets)
-
-        for packet in packets: 
-            if(getSource(packet) in badsites or getDest(packet) in badsites): #consider hashset
-                badcounter=badcounter+1
+        packet = update.val
+        print(packet)
+        counter=counter+1
+        if(getSource(packet) in badsites or getDest(packet) in badsites): #consider hashset
+            badcounter=badcounter+1
         
-        processSites(badcounter/(500)) #right now batch is a magic no. corresponds to SIZE_OF_BATCH in collector. Fix. 
-        badcounter = 0
+        if(counter==100):
+            processSites(badcounter)
+            counter=0
+            badcounter=0
 
 def processSites(ptg):
-    if ptg > 0.20:
+    if ptg > 20:
         backToWork()
+
+def get(stub, path_str, metadata):
+    """Get and echo the response"""
+    response = stub.Get(pyopenconfig.resources.make_get_request(path_str),
+                        metadata=metadata)
+    print(response)
 
 def getSource(packet):
     if scapy.IP in packet:
@@ -83,12 +91,6 @@ def getDest(packet):
     
     dest = socket.gethostbyaddr(dst_addr)
     return dest
-
-def get(stub, path_str, metadata):
-    """Get and echo the response"""
-    response = stub.Get(pyopenconfig.resources.make_get_request(path_str),
-                        metadata=metadata)
-    print(response)
 
 def subscribe(stub, path_str, mode, metadata):
     global nums
@@ -159,7 +161,7 @@ def run():
     elif args.subscribe:
         subscribe(stub, args.subscribe, args.mode, metadata)
     else:
-        subscribe(stub, '/', metadata)
+        subscribe(stub, '/', args.mode, metadata)
 
 
 if __name__ == '__main__':

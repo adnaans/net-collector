@@ -1,19 +1,3 @@
-#!/usr/bin/env python
-# Copyright (C) 2016  Arista Networks, Inc.
-# Use of this source code is governed by the Apache License 2.0
-# that can be found in the COPYING file.
-
-"""The Python implementation of a gNMI client."""
-
-from __future__ import print_function
-
-import argparse
-import logging
-import sys
-import time
-import socket
-
-import grpc
 import grpc.framework.interfaces.face
 import pyopenconfig.gnmi_pb2
 import pyopenconfig.resources
@@ -137,7 +121,7 @@ def run():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--get',
                        help='OpenConfig path to perform a single-shot get')
-    group.add_argument('--subscribe', type=str, default='interfaces/eth0/ip'
+    group.add_argument('--subscribe', type=str, default='interfaces/eth0/ip',
                        help='OpenConfig path to subscribe to')
     args = parser.parse_args()
 
@@ -163,3 +147,4 @@ def run():
 
 if __name__ == '__main__':
     run()
+

@@ -1,168 +1,133 @@
-#!/usr/bin/env python
-# Copyright (C) 2016  Arista Networks, Inc.
-# Use of this source code is governed by the Apache License 2.0
-# that can be found in the COPYING file.
+"""
+Simple Collector, initiates gNMI calls to multiple fun_probes and aggregates   
+"""
 
-"""The Python implementation of a gNMI client."""
-
-from __future__ import print_function
-
-import argparse
-import logging
-import sys
-import time
-import socket
-
+import gnmi.gnmi_pb2_grpc as gnmi_pb2_grpc
+import gnmi.gnmi_pb2 as gnmi_pb2
+from pathtree.pathtree import Branch as Branch 
+from pathtree.pathtree import Path
 import grpc
-import grpc.framework.interfaces.face
-import pyopenconfig.gnmi_pb2
-import pyopenconfig.resources
+from concurrent import futures
+import time
+import logging
+import argparse
 
-import potsdb
-import atexit
-from scapy.all import *
+from multiprocessing import Pool
+from multiprocessing.dummy import Pool as ThreadPool
+
 
 # - logging configuration
 logging.basicConfig()
-logger = logging.getLogger('test-client')
+logger = logging.getLogger('collector')
 
 logger.setLevel(logging.DEBUG)
 
+#configure southbound device address
+device1_ip = "" #h1.IP()
+device1_port = 9030
+
+device2_ip = "" #h2.IP()
+device2_port = 9031
+
 host_ip = "localhost"
-host_port = 80050
+host_port = 9032
 
-mode = "stream"
-nums = 0
+interval = 1
 
-db_host = 'localhost'
-db_port = 4242
-metrics = potsdb.Client(db_host, port=db_port)
+SIZE_OF_BATH = 500
 
-counter = 0
-badcounter = 0
+_ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-unproductivewebsites=["facebook.com"]
+class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
-def encodePath(path):
-    pathStrs = "" 
-    for pe in path:
-        pstr = pe.name
-        if pe.key:
-             for k, v in pe.key.iteritems():
-                  pstr += "[" + str(k) + "=" + str(v) + "]"
-        pathStrs = pathStrs + "." + pstr
-    return pathStrs[1:]
+    def __init__(self):
+        #initiate an empty pathtree for storing updates from the probes
+        self.ptree = Branch() 
 
-def processPacket(response): #consider making a batch
-    for update in response.update.update:
-        path_metric = encodePath(update.path.elem)
-        tm = response.update.timestamp
-        packet = update.val
-        print(packet)
-        counter=counter+1
-        if(getSource(packet) in badsites or getDest(packet) in badsites): #consider hashset
-            badcounter=badcounter+1
-        
-        if(counter==100):
-            processSites(badcounter)
-            counter=0
-            badcounter=0
+    def Subscribe(self, request_iterator, context):
+        #create a channel connecting to the southbound device
+        channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
+        stub1 = gnmi_pb2.gNMIStub(channel)
 
-def processSites(ptg):
-    if ptg > 20:
-        backToWork()
+        channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
+        stub2 = gnmi_pb2.gNMIStub(channel)
+        #start streaming
+        pool = ThreadPool(2)
+        stubs = [stub1, stub2]
+        global PACKET_LIST
+        PACKET_LIST = pool.map(stream, stubs)
 
-def get(stub, path_str, metadata):
-    """Get and echo the response"""
-    response = stub.Get(pyopenconfig.resources.make_get_request(path_str),
-                        metadata=metadata)
-    print(response)
+        print "Streaming done!"
 
-def getSource(packet):
-    if scapy.IP in packet:
-        src_addr=packet[scapy.IP].src
-    
-    source = socket.gethostbyaddr(src_addr)
-    return source
-
-def getDest(packet):
-    if scapy.IP in packet:
-        dst_addr=packet[scapy.IP].dst
-    
-    dest = socket.gethostbyaddr(dst_addr)
-    return dest
-
-def subscribe(stub, path_str, mode, metadata):
-    global nums
-    """Subscribe and echo the stream"""
-    logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
-    subscribe_request = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
-    i = 0
-    try:
-        for response in stub.Subscribe(subscribe_request, metadata=metadata):
+    def stream(stub):
+        if (len(PACKET_LIST)>=SIZE_OF_BATCH):
+            print PACKET_LIST
+            savetoPathTree(PACKET_LIST)
+            PACKET_LIST.clear()
+        for response in stub.Subscribe(request_iterator):
             logger.debug(response)
-            processPacket(response)
-            i += 1
-            nums = i
-    except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception
-        if error.code == grpc.StatusCode.OUT_OF_RANGE and error.details == 'EOF':
-            # https://github.com/grpc/grpc/issues/7192
-            sys.stderr.write('EOF after %d updates\n' % i)
-            logger.info('EOF after %d updates\n' % i)
-        else:
-            raise
+            if response.update:
+                return response.update
+            else:
+                pass
+    
+    def saveToPathTree(self, update):
+        tm = update.timestamp
+        updates = update.update
 
-    logger.info("Finished streaming, %s updates has been streamed." % i)
+        for u in updates:
+           path = u.path
+           val = u.val
+           pathStrs = self.encodePath(path.elem)
+           self.ptree.add(pathStrs, tm, val.int_val)
 
-def shutdown_hook():
-    global nums
-    try:
-        pass
-    except Exception:
-        pass 
-    finally:
-        logger.info("%s updates has been streamed." % nums)
-        logger.info('existing program')
+    def encodePath(self, path):
+        pathStrs = []
+        for pe in path:
+            pstr = pe.name
+            if pe.key:
+                for k, v in pe.key.iteritems():
+                    pstr += "[" + str(k) + "=" + str(v) + "]"
+            pathStrs.append(pstr)
+        return pathStrs
 
 
-def run():
-    """Main loop"""
+def serve():
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='localhost',
                         help='OpenConfig server host')
-    parser.add_argument('--port', type=int, default=80051,
+    parser.add_argument('--port', type=int, default=9032,
                         help='OpenConfig server port')
-    parser.add_argument('--username', type=str, help='username')
-    parser.add_argument('--password', type=str, help='password')
-    parser.add_argument('--mode', type=str, default='stream', help='subscription mode')
-    parser.add_argument('--debug', type=str, default='on', help='debug level')
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('--get',
-                       help='OpenConfig path to perform a single-shot get')
-    group.add_argument('--subscribe',
-                       help='OpenConfig path to subscribe to')
+    parser.add_argument('--devicehosts', type=list, default=[])
+    parser.add_argument('--deviceports', type=list, default=[9030, 9031])
+
+    parser.add_argument('--sample', type=int, default=1,
+                        help='how many messages to be aggregated')
+    parser.add_argument('--debug', type=str, default='on', help='debug level')
     args = parser.parse_args()
 
-    metadata = None
+    global interval
+    interval = args.sample
+    device1_port = args.deviceports[0]
+    print device1_port
+    device2_port = args.deviceports[1]
+    print device2_port
+
     if args.debug == "off":
         logger.setLevel(logging.INFO)
-        
-    if args.username or args.password:
-        metadata = [("username", args.username), ("password", args.password)]
 
-    channel = grpc.insecure_channel(args.host + ":" + str(args.port))
-    stub = pyopenconfig.gnmi_pb2.gNMIStub(channel)
-
-    atexit.register(shutdown_hook) 
-
-    if args.get:
-        get(stub, args.get, metadata)
-    elif args.subscribe:
-        subscribe(stub, args.subscribe, args.mode, metadata)
-    else:
-        subscribe(stub, '/', args.mode, metadata)
-
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    gnmi_pb2_grpc.add_gNMIServicer_to_server(
+        CollectorServicer(), server)
+    server.add_insecure_port(args.host + ":" + str(args.port))
+    server.start()
+    logger.info("Collector Server Started.....")
+    try:
+       while True:
+          time.sleep(_ONE_DAY_IN_SECONDS)
+    except KeyboardInterrupt:
+        server.stop(0)
 
 if __name__ == '__main__':
-    run()
+    serve()

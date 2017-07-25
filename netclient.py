@@ -139,7 +139,7 @@ def run():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--get',
                        help='OpenConfig path to perform a single-shot get')
-    group.add_argument('--subscribe',
+    group.add_argument('--subscribe', type=str, default='interfaces/eth0/ip'
                        help='OpenConfig path to subscribe to')
     args = parser.parse_args()
 

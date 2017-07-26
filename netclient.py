@@ -1,30 +1,13 @@
-#!/usr/bin/env python
-# Copyright (C) 2016  Arista Networks, Inc.
-# Use of this source code is governed by the Apache License 2.0
-# that can be found in the COPYING file.
-
-"""The Python implementation of a gNMI client."""
-
-from __future__ import print_function
-
-import argparse
-import logging
-import sys
-import time
-import socket
-
-import grpc
 import grpc.framework.interfaces.face
 import pyopenconfig.gnmi_pb2
 import pyopenconfig.resources
 
-import potsdb
 import atexit
 from scapy.all import *
 
 # - logging configuration
 logging.basicConfig()
-logger = logging.getLogger('test-client')
+logger = logging.getLogger('netclient')
 
 logger.setLevel(logging.DEBUG)
 
@@ -95,12 +78,12 @@ def subscribe(stub, path_str, mode, metadata):
     """Subscribe and echo the stream"""
     logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
     subscribe_request = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
-    i = 0
+    i = 500
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
             logger.debug(response)
             processPacket(response)
-            i += 1
+            i += 500
             nums = i
     except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception
         if error.code == grpc.StatusCode.OUT_OF_RANGE and error.details == 'EOF':
@@ -127,8 +110,8 @@ def run():
     """Main loop"""
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='localhost',
-                        help='OpenConfig server host')
-    parser.add_argument('--port', type=int, default=80051,
+                        help='OpenConfig server host') #on mininet host's IP 
+    parser.add_argument('--port', type=int, default=9033,
                         help='OpenConfig server port')
     parser.add_argument('--username', type=str, help='username')
     parser.add_argument('--password', type=str, help='password')
@@ -138,7 +121,7 @@ def run():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--get',
                        help='OpenConfig path to perform a single-shot get')
-    group.add_argument('--subscribe',
+    group.add_argument('--subscribe', type=str, default='interfaces/eth0/ip',
                        help='OpenConfig path to subscribe to')
     args = parser.parse_args()
 
@@ -164,3 +147,4 @@ def run():
 
 if __name__ == '__main__':
     run()
+

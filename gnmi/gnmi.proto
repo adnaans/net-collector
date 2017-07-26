@@ -408,9 +408,9 @@ message Packet{
 }
 
 message Ethernet {
-  required string dst = 1;
-  required string src = 2;
-  required int32 type = 3;
+  string dst = 1;
+  string src = 2;
+  int32 type = 3;
 }
 
 message IP {

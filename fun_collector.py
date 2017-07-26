@@ -61,19 +61,11 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
         print "Streaming done!"
 
-    def getSource(self, packet):
-        if scapy.IP in packet:
-            src_addr=packet[scapy.IP].src
-        
-        source = socket.gethostbyaddr(src_addr)
-        return source
-
-    def getDest(self, packet):
-        if scapy.IP in packet:
-            dst_addr=packet[scapy.IP].dst
-        
-        dest = socket.gethostbyaddr(dst_addr)
-        return dest
+    def filter(self, update):
+        string src = update.IP().src()
+        string dst = update.IP().dst()
+        fixedUpdate = gnmi_pb2.IpPair(src=src, dst=dst)
+        return fixedUpdate
 
     def stream(self, stub):
         if (len(PACKET_LIST)>=SIZE_OF_BATCH):
@@ -83,7 +75,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         for response in stub.Subscribe(request_iterator):
             logger.debug(response)
             if response.update:
-                return response.update
+                return filtered(response.update)
             else:
                 pass
     

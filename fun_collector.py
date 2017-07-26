@@ -15,6 +15,8 @@ import argparse
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
+from scapy.all import *
+
 
 # - logging configuration
 logging.basicConfig()
@@ -59,7 +61,21 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
         print "Streaming done!"
 
-    def stream(stub):
+    def getSource(self, packet):
+        if scapy.IP in packet:
+            src_addr=packet[scapy.IP].src
+        
+        source = socket.gethostbyaddr(src_addr)
+        return source
+
+    def getDest(self, packet):
+        if scapy.IP in packet:
+            dst_addr=packet[scapy.IP].dst
+        
+        dest = socket.gethostbyaddr(dst_addr)
+        return dest
+
+    def stream(self, stub):
         if (len(PACKET_LIST)>=SIZE_OF_BATCH):
             print PACKET_LIST
             savetoPathTree(PACKET_LIST)

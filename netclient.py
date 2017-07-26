@@ -53,19 +53,6 @@ def processSites(ptg):
     if ptg > 0.20:
         backToWork()
 
-def getSource(packet):
-    if scapy.IP in packet:
-        src_addr=packet[scapy.IP].src
-    
-    source = socket.gethostbyaddr(src_addr)
-    return source
-
-def getDest(packet):
-    if scapy.IP in packet:
-        dst_addr=packet[scapy.IP].dst
-    
-    dest = socket.gethostbyaddr(dst_addr)
-    return dest
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""

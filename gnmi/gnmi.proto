@@ -15,8 +15,8 @@
 //
 syntax = "proto3";
 
-import "github.com/golang/protobuf/ptypes/any/any.proto";
-import "github.com/google/protobuf/src/google/protobuf/descriptor.proto";
+import "any.proto";
+import "descriptor.proto";
 
 // Package gNMI defines a service specification for the gRPC Network Management
 // Interface. This interface is defined to be a standard interface via which
@@ -401,16 +401,16 @@ message ModelData {
 
 //Shallow version of a Scapy packet. Ethernet, IP, TCP, and Raw are nested in Packet. 
 message Packet{
-  required Ethernet e = 1;
+  Ethernet e = 1;
   IP i = 2;
   TCP t = 3;
   Raw r = 4;
 }
 
 message Ethernet {
-  required string dst = 1;
-  required string src = 2;
-  required int32 type = 3;
+  string dst = 1;
+  string src = 2;
+  int32 type = 3;
 }
 
 message IP {
@@ -425,7 +425,7 @@ message IP {
   int32 proto = 9;
   int32 chksum = 10;
   string dst = 11;
-  strint src = 12;
+  string src = 12;
 }
 
 message TCP {

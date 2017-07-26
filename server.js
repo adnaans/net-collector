@@ -12,7 +12,7 @@ var mimeTypes = {
     "png": "image/png",
     "js": "text/javascript",
     "css": "text/css"};
-
+/*
 fs.readFile('./index.html', function (err, html) {
     if (err) {
         throw err; 
@@ -42,4 +42,17 @@ fs.readFile('./index.html', function (err, html) {
     }).listen(8000);
 });
 
+*/
 
+var app = require('express')();
+var http = require('http').Server(app);
+
+app.get('/', function(req, res){
+res.sendFile(__dirname + '/index.html');
+});
+    
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});
+    

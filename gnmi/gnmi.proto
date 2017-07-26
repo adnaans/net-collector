@@ -409,7 +409,7 @@ message Packet{
 
 message Ethernet {
   required string dst = 1;
-  required sring src = 2;
+  required string src = 2;
   required int32 type = 3;
 }
 
@@ -424,6 +424,8 @@ message IP {
   int32 ttl = 8;
   int32 proto = 9;
   int32 chksum = 10;
+  string dst = 11;
+  strint src = 12;
 }
 
 message TCP {

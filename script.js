@@ -6,3 +6,6 @@ if(metric >= 25){
     document.getElementById("msg").innerHTML = "GET BACK TO WORK!";
     document.getElementById("bg").style.backgroundColor =	"#FF0000";
 }
+
+//app..post /set-status, callback
+

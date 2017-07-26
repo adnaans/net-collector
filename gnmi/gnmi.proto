@@ -425,7 +425,7 @@ message IP {
   int32 proto = 9;
   int32 chksum = 10;
   string dst = 11;
-  strint src = 12;
+  string src = 12;
 }
 
 message TCP {

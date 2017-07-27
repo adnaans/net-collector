@@ -45,10 +45,10 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
     def Subscribe(self, request_iterator, context):
         #create a channel connecting to the southbound device
         channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
-        stub1 = gnmi_pb2.gNMIStub(channel)
+        stub1 = gnmi_pb2.gNMIStub(channel1)
 
         channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
-        stub2 = gnmi_pb2.gNMIStub(channel)
+        stub2 = gnmi_pb2.gNMIStub(channel2)
         #start streaming
         pool = ThreadPool(2)
         stubs = [stub1, stub2]

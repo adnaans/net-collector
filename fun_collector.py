@@ -34,10 +34,6 @@ device2_port = 9031
 host_ip = "localhost"
 host_port = 9032
 
-interval = 1
-
-SIZE_OF_BATH = 500
-
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
@@ -62,8 +58,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         print "Streaming done!"
 
     def filterAndPackage(self, update):
-        string src = update.IP().src()
-        string dst = update.IP().dst()
+        src = update.IP().src()
+        dst = update.IP().dst()
         fixedUpdate = gnmi_pb2.IpPair(src=src, dst=dst)
         return fixedUpdate
 

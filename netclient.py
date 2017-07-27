@@ -23,7 +23,7 @@ nums = 0
 
 counter = 0
 
-badsites= set("facebook.com") 
+badsites= set("facebook.com", "www.twitter.com", "www.reddit.com") 
 
 def encodePath(path):
     pathStrs = "" 
@@ -35,17 +35,17 @@ def encodePath(path):
         pathStrs = pathStrs + "." + pstr
     return pathStrs[1:]
 
-def processPacket(response): #consider making a batch
+def processPacket(response): #HAVE TO FIX THIS METHOD TO DEAL WITH AN IPPAIRBATCH OF ip string pairs 
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        packets = update.val
-        print(packets)
-        for packet in packets: 
-            if(getSource(packet) in badsites or getDest(packet) in badsites): #consider hashset
+        pairs = update.val
+        print(pairs)
+        for pair in pairs: 
+            if(pair.src() in badsites or pair.dst() in badsites): #consider hashset
                 badcounter=badcounter+1
         
-        processSites(badcounter/(500)) #right now batch is a magic no. corresponds to SIZE_OF_BATCH in collector. Fix. 
+        processSites(badcounter/(len(pairs))) 
         badcounter = 0
 
 def processSites(ptg):

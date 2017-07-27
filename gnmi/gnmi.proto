@@ -446,27 +446,8 @@ message Raw {
 }
 
 //For filtering 
-message HundredIpPairs {
-  TwentyFiveIpPairs i1 = 1;
-  TwentyFiveIpPairs i2 = 2;
-  TwentyFiveIpPairs i3 = 3;
-  TwentyFiveIpPairs i4 = 4; 
-}
-
-message TwentyFiveIpPairs {
-  FiveIpPairs i1 = 1;
-  FiveIpPairs i2 = 2;
-  FiveIpPairs i3 = 3;
-  FiveIpPairs i4 = 4;
-  FiveIpPairs i5 = 5;
-}
-message FiveIpPairs{
-  IpPair i1 = 1;
-  IpPair i2 = 2;
-  IpPair i3 = 3;
-  IpPair i4 = 4;
-  IpPair i5 = 5;
-
+message IpPairBatch {
+  repeated IpPair ip = 1;
 }
 message IpPair { 
   string src = 1;

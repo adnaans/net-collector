@@ -56,26 +56,28 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         #start streaming
         pool = ThreadPool(2)
         stubs = [stub1, stub2]
-        global PACKET_LIST
-        PACKET_LIST = pool.map(stream, stubs)
+        global PAIR_LIST
+        PAIR_LIST = pool.map(stream, stubs)
 
         print "Streaming done!"
 
-    def filter(self, update):
+    def filterAndPackage(self, update):
         string src = update.IP().src()
         string dst = update.IP().dst()
         fixedUpdate = gnmi_pb2.IpPair(src=src, dst=dst)
         return fixedUpdate
 
     def stream(self, stub):
-        if (len(PACKET_LIST)>=SIZE_OF_BATCH):
-            print PACKET_LIST
-            savetoPathTree(PACKET_LIST)
+        if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100
+            batch = gnmi_pb2.IpPairBatch()
+            for pair in PAIR_LIST:
+                batch.add_ip(pair)
+            saveToPathTree(batch)
             PACKET_LIST.clear()
         for response in stub.Subscribe(request_iterator):
             logger.debug(response)
             if response.update:
-                return filtered(response.update)
+                return filterAndPackage(response.update)
             else:
                 pass
     

@@ -41,7 +41,6 @@ def processPacket(response): #consider making a batch
         tm = response.update.timestamp
         packets = update.val
         print(packets)
-
         for packet in packets: 
             if(getSource(packet) in badsites or getDest(packet) in badsites): #consider hashset
                 badcounter=badcounter+1
@@ -52,7 +51,6 @@ def processPacket(response): #consider making a batch
 def processSites(ptg):
     if ptg > 0.20:
         backToWork()
-
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""

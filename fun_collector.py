@@ -12,11 +12,13 @@ import time
 import logging
 import argparse
 
-from multiprocessing import Pool
-from multiprocessing.dummy import Pool as ThreadPool
+import Queue
+import threading 
 
 from scapy.all import *
 
+queues = []
+processingQ = Queue.Queue()
 
 # - logging configuration
 logging.basicConfig()
@@ -42,6 +44,34 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         #initiate an empty pathtree for storing updates from the probes
         self.ptree = Branch() 
 
+    def filterAndPackage(self, update):
+        src = update.IP().src()
+        dst = update.IP().dst()
+        fixedUpdate = gnmi_pb2.IpPair(src=src, dst=dst)
+        return fixedUpdate
+
+    def stream(self, stub):  
+        for response in stub.Subscribe(request_iterator):
+            logger.debug(response)
+            if response.update:
+                processingQ.put(filterAndPackage(response.update)) 
+            else:
+                pass
+
+    def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
+        PAIR_LIST = []
+        while True: 
+            pkgdPkt = processingQ.get()
+            PAIR_LIST.append(pkgdPkt)
+            if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100
+                batch = gnmi_pb2.IpPairBatch()
+                for pair in PAIR_LIST:
+                    batch.add_ip(pair)
+                    #saveToPathTree(batch)
+                    for q in queues:
+                        q.put(batch)
+                    del PAIR_LIST[:]
+
     def Subscribe(self, request_iterator, context):
         #create a channel connecting to the southbound device
         channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
@@ -49,35 +79,26 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
         channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
         stub2 = gnmi_pb2.gNMIStub(channel2)
+
+        q = Queue.Queue()
+        queues.append(q)
+
         #start streaming
-        pool = ThreadPool(2)
         stubs = [stub1, stub2]
-        global PAIR_LIST
-        PAIR_LIST = pool.map(stream, stubs)
+        threads = []
+        for stub in stubs:
+            t = threading.Thread(target=stream, args=(stub,))
+            threads.append(t) #is this even needed bro
+            t.start()
+        processingT = threading.Thread(target=processThatQ)
+        while True:
+            for q in queues:
+                yield q.get()
+
 
         print "Streaming done!"
-
-    def filterAndPackage(self, update):
-        src = update.IP().src()
-        dst = update.IP().dst()
-        fixedUpdate = gnmi_pb2.IpPair(src=src, dst=dst)
-        return fixedUpdate
-
-    def stream(self, stub):
-        if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100
-            batch = gnmi_pb2.IpPairBatch()
-            for pair in PAIR_LIST:
-                batch.add_ip(pair)
-            saveToPathTree(batch)
-            PACKET_LIST.clear()
-        for response in stub.Subscribe(request_iterator):
-            logger.debug(response)
-            if response.update:
-                return filterAndPackage(response.update)
-            else:
-                pass
     
-    def saveToPathTree(self, update):
+    def saveToPathTree(self, update): #what is the point of this pathtree... we should ask song eventually
         tm = update.timestamp
         updates = update.update
 
@@ -85,7 +106,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
            path = u.path
            val = u.val
            pathStrs = self.encodePath(path.elem)
-           self.ptree.add(pathStrs, tm, val.int_val)
+           self.ptree.add(pathStrs, tm, val.ip)
 
     def encodePath(self, path):
         pathStrs = []
@@ -123,12 +144,16 @@ def serve():
     if args.debug == "off":
         logger.setLevel(logging.INFO)
 
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10)) #COULD BLOCK
     gnmi_pb2_grpc.add_gNMIServicer_to_server(
         CollectorServicer(), server)
     server.add_insecure_port(args.host + ":" + str(args.port))
     server.start()
     logger.info("Collector Server Started.....")
+    #CONSTRUCT QUEUE FOR PROBE TO PROCESSING
+    #KICK OFF CLIENT LISTENING (SENDING PKTS TO PROCESSING QUEUE) [1 THREAD PER CLIENT]
+    #KICK OFF THREAD CONSUMING PROCESSING QUEUE
+    #LIST OF SUBSCRIBER QUEUES
     try:
        while True:
           time.sleep(_ONE_DAY_IN_SECONDS)

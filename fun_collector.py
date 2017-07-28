@@ -50,7 +50,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         fixedUpdate = gnmi_pb2.IpPair(src=src, dst=dst)
         return fixedUpdate
 
-    def stream(self, stub):  
+    def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator):
             logger.debug(response)
             if response.update:
@@ -87,10 +87,10 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         stubs = [stub1, stub2]
         threads = []
         for stub in stubs:
-            t = threading.Thread(target=self.stream, args=(stub,))
+            t = threading.Thread(target=self.stream, args=(stub, request_iterator))
             threads.append(t) #is this even needed bro
             t.start()
-        processingT = threading.Thread(target=processThatQ)
+        processingT = threading.Thread(target=self.processThatQ)
         while True:
             for q in queues:
                 yield q.get()

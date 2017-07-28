@@ -52,7 +52,11 @@ def processPacket(response): #HAVE TO FIX THIS METHOD TO DEAL WITH AN IPPAIRBATC
             if(pair.src() in badsites or pair.dst() in badsites or pair.src()=="10.0.0.1" or pair.dst()=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         
-        requests.post('http://localhost:3000/post', json = { 'ptg' : badcounter/(len(pairs))*100 })
+        if(badcounter/(len(pairs))*100>15):
+            decision=True
+        elif(badcounter/(len(pairs))*100<=15):
+            decision=False
+        requests.post('http://localhost:3002/post', json = { 'decision' : decision })
         badcounter = 0
 
 # def backToWork():

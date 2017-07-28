@@ -23,10 +23,10 @@ app.use( bodyParser.json() );
 
 app.post('/post', function (req, res) {
   console.log(req.body)
-  if(req.body['ptg']>12){
+  if(req.body['ptg']){
     io.emit('backtowork');
   }
-  else if(req.body['ptg']<=12){
+  else if(!req.body['ptg']){
     io.emit('keepworking');
   }
   else{

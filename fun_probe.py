@@ -40,7 +40,8 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         pass
 
     def getPacketData(self, path):
-        packet = scapy.sniff(timeout=5)
+        packet = scapy.sniff(count=1)[0]
+        
         ethernet = gnmi_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)
         ipp = gnmi_pb2.IP(version=packet[scapy.IP].version, ihl=packet[scapy.IP].ihl, tos=packet[scapy.IP].tos,
                             len=packet[scapy.IP].len, id=packet[scapy.IP].id, flags=packet[scapy.IP].flags,
@@ -51,9 +52,29 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
                             flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum,
                             urgptr=packet[scapy.TCP].urgptr, options=packet[scapy.TCP].options)
         raw = gnmi_pb2.Raw(load=packet[scapy.Raw].load)
-        packets = gnmi_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
-        print packets
-        return gnmi_pb2.Update(path=path, val=packets)
+        gnmiPacket = gnmi_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
+
+        return gnmiPacket
+
+        # packets = scapy.sniff(timeout=5)
+        # gnmiPackets=[]
+        # for packet in packets:
+        #     ethernet = gnmi_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)
+        #     ipp = gnmi_pb2.IP(version=packet[scapy.IP].version, ihl=packet[scapy.IP].ihl, tos=packet[scapy.IP].tos,
+        #                         len=packet[scapy.IP].len, id=packet[scapy.IP].id, flags=packet[scapy.IP].flags,
+        #                         frag=packet[scapy.IP].frag, ttl=packet[scapy.IP].ttl, proto=packet[scapy.IP].proto,
+        #                         chksum=packet[scapy.IP].chksum, src=packet[scapy.IP].src, dst=packet[scapy.IP].dst)
+        #     tcp = gnmi_pb2.TCP(sport=packet[scapy.TCP].sport, dport=packet[scapy.TCP].dport, seq=packet[scapy.TCP].seq,
+        #                         ack=packet[scapy.TCP].ack, dataofs=packet[scapy.TCP].dataofs, reserved=packet[scapy.TCP].reserved,
+        #                         flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum,
+        #                         urgptr=packet[scapy.TCP].urgptr, options=packet[scapy.TCP].options)
+        #     raw = gnmi_pb2.Raw(load=packet[scapy.Raw].load)
+        #     gnmiPacket = gnmi_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
+
+        #     yield gnmiPacket
+            
+        #     gnmiPackets.append(gnmiPacket)
+        # return gnmi_pb2.Update(path=path, val=gnmiPackets)
 
     def Subscribe(self, request_iterator, context):
         tag = 0

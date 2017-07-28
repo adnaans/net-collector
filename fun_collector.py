@@ -87,7 +87,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         stubs = [stub1, stub2]
         threads = []
         for stub in stubs:
-            t = threading.Thread(target=stream, args=(stub,))
+            t = threading.Thread(target=self.stream, args=(stub,))
             threads.append(t) #is this even needed bro
             t.start()
         processingT = threading.Thread(target=processThatQ)

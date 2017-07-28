@@ -10,6 +10,8 @@ import pyopenconfig.resources
 import atexit
 from scapy.all import *
 
+import requests
+
 # - logging configuration
 logging.basicConfig()
 logger = logging.getLogger('netclient')
@@ -50,18 +52,15 @@ def processPacket(response): #HAVE TO FIX THIS METHOD TO DEAL WITH AN IPPAIRBATC
             if(pair.src() in badsites or pair.dst() in badsites or pair.src()=="10.0.0.1" or pair.dst()=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         
-        processSites(badcounter/(len(pairs))) 
+        requests.post('http://localhost:3000/post', json = { 'ptg' : badcounter/(len(pairs))*100 })
         badcounter = 0
 
-def backToWork():
-    print("this happened! events ARE registering...LIFE IS EXCITING." +
-            "there's always more to see, do, and feel. and the world is" +
-            "so big compared to the people in it. and the universe is so big" +
-            "compared to the world.")
+# def backToWork():
+#     print("this happened! events ARE registering...LIFE IS EXCITING." +
+#             "there's always more to see, do, and feel. and the world is" +
+#             "so big compared to the people in it. and the universe is so big" +
+#             "compared to the world.")
 
-def processSites(ptg):
-    if ptg > 0.50:
-        backToWork()
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""

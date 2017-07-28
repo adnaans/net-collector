@@ -48,7 +48,7 @@ fs.readFile('./index.html', function (err, html) {
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
+var bodyParser = require('body-parser');
 
 // app.get('/', function(req, res){
 // res.sendFile(__dirname + '/index.html');
@@ -58,9 +58,18 @@ var io = require('socket.io')(http);
   // res.send('Hello World!')
 // })
 
-// app.post('/', function (req, res) {
-//   res.send('Got a POST request')
-// })
+app.use( bodyParser.json() );
+
+app.post('/post', function (req, res) {
+  console.log(req.body)
+  if(req.body['ptg']>12){
+    io.emit('backtowork');
+  }
+  else{
+    io.emit('keepworking');
+  }
+  res.send('Got a POST request')
+})
 
 // app.put('/user', function (req, res) {
 //   res.send('Got a PUT request at /user')
@@ -77,15 +86,15 @@ app.use(express.static(__dirname))
 //   res.sendFile(__dirname + '/index.html');
 // });
 
-io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
-});
+// io.on('connection', function(socket){
+//   console.log('a user connected');
+//   socket.on('disconnect', function(){
+//     console.log('user disconnected');
+//   });
+//   socket.on('chat message', function(msg){
+//     io.emit('chat message', msg);
+//   });
+// });
 
 http.listen(3000, function(){
   console.log('listening on *:3000');

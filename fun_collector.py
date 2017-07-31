@@ -54,7 +54,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         for response in stub.Subscribe(request_iterator):
             logger.debug(response)
             if response.update:
-                logger.info("A response has been registered...")
+                logger.info("Collector has registered a response.")
                 processingQ.put(filterAndPackage(response.update)) 
             else:
                 pass
@@ -74,6 +74,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                     del PAIR_LIST[:]
 
     def Subscribe(self, request_iterator, context):
+        logger.info("Collector has received a subscribe request.")
         #create a channel connecting to the southbound device
         channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
         stub1 = gnmi_pb2.gNMIStub(channel1)
@@ -99,15 +100,15 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
         print "Streaming done!"
     
-    def saveToPathTree(self, update): #what is the point of this pathtree... we should ask song eventually
-        tm = update.timestamp
-        updates = update.update
+    #def saveToPathTree(self, update): #what is the point of this pathtree... we should ask song eventually
+        #tm = update.timestamp
+        #updates = update.update
 
-        for u in updates:
-           path = u.path
-           val = u.val
-           pathStrs = self.encodePath(path.elem)
-           self.ptree.add(pathStrs, tm, val.ip)
+        #for u in updates:
+           #path = u.path
+           #val = u.val
+           #pathStrs = self.encodePath(path.elem)
+           #self.ptree.add(pathStrs, tm, val.ip)
 
     def encodePath(self, path):
         pathStrs = []

@@ -78,6 +78,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         # return gnmi_pb2.Update(path=path, val=gnmiPackets)
 
     def Subscribe(self, request_iterator, context):
+        logger.info("Probe has received a subscribe request.")
         tag = 0
         for request in request_iterator:
             sublist = request.subscribe.subscription

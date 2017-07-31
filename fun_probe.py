@@ -53,7 +53,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
                             ack=packet[scapy.TCP].ack, dataofs=packet[scapy.TCP].dataofs, reserved=packet[scapy.TCP].reserved,
                             flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum,
                             urgptr=packet[scapy.TCP].urgptr)
-        raw = pkt_pb2.Raw(load=packet[scapy.Raw].load)
+        raw = pkt_pb2.Raw(load=packet[scapy.Raw].load.encode("utf-8"))
         gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
 
         return gnmiPacket

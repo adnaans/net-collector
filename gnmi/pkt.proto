@@ -57,7 +57,7 @@ message TCP {
   int64 flags = 7;
   int32 window = 8;
   int32 chksum = 9;
-  int32 urgptr = 10;
+  int64 urgptr = 10;
 }
 
 message Raw {

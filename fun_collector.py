@@ -28,13 +28,13 @@ logger.setLevel(logging.DEBUG)
 
 #configure southbound device address
 device1_ip = "" #h1.IP()
-device1_port = 9030
+device1_port = ""
 
 device2_ip = "" #h2.IP()
-device2_port = 9031
+device2_port = ""
 
-host_ip = "localhost"
-host_port = 9032
+host_ip = ""
+host_port = ""
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -129,19 +129,24 @@ def serve():
                         help='OpenConfig server port')
 
     parser.add_argument('--devicehosts', type=list, default=[])
-    parser.add_argument('--deviceports', type=list, default=[9030, 9031])
+    parser.add_argument('--deviceports', type=list, default=[])
 
-    parser.add_argument('--sample', type=int, default=1,
+    #parser.add_argument('--sample', type=int, default=1,
                         help='how many messages to be aggregated')
     parser.add_argument('--debug', type=str, default='on', help='debug level')
     args = parser.parse_args()
 
-    global interval
-    interval = args.sample
+    #global interval
+    #interval = args.sample
+    host_ip = args.host
+    host_port = args.port
+
+    device1_ip = args.devicehosts[0]
+    device1_ip = args.devicehosts[1]
+
     device1_port = args.deviceports[0]
-    print device1_port
     device2_port = args.deviceports[1]
-    print device2_port
+    
 
     if args.debug == "off":
         logger.setLevel(logging.INFO)

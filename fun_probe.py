@@ -55,8 +55,8 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
                             urgptr=packet[scapy.TCP].urgptr)
         raw = pkt_pb2.Raw(load=packet[scapy.Raw].load.encode("utf-8"))
         gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
-
-        return gnmiPacket
+        update = gnmi_pb2.Update(path=path,val=gnmiPacket)
+        return update
 
     def Subscribe(self, request_iterator, context): #not 100% sure what is happening here. 
         logger.info("Probe has received a subscribe request.")

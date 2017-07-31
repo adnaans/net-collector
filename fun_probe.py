@@ -58,8 +58,8 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         if scapy.TCP in packet:
             tcp = pkt_pb2.TCP(sport=packet[scapy.TCP].sport, dport=packet[scapy.TCP].dport, seq=packet[scapy.TCP].seq,
                                 ack=packet[scapy.TCP].ack, dataofs=packet[scapy.TCP].dataofs, reserved=packet[scapy.TCP].reserved,
-                                flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum,
-                                urgptr=packet[scapy.TCP].urgptr)
+                                flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum)
+            #urgptr=packet[scapy.TCP].urgptr - later add if figure out why error
         else:
             tcp = None
         if scapy.Raw in packet:

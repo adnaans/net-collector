@@ -130,8 +130,11 @@ def serve():
     parser.add_argument('--port', type=int, default="",
                         help='OpenConfig server port')
 
-    parser.add_argument('--devicehosts', type=list, default=[])
-    parser.add_argument('--deviceports', type=list, default=[])
+    parser.add_argument('--d1host', default='', help='ip address for device 1')
+    parser.add_argument('--d2host', default='', help='ip address for device 2')
+
+    parser.add_argument('--d1port', default='', help='port for device 1')
+    parser.add_argument('--d2port', default='', help='port for device 2')
 
     #parser.add_argument('--sample', type=int, default=1,
     #                   help='how many messages to be aggregated')
@@ -143,11 +146,16 @@ def serve():
     host_ip = args.host
     host_port = args.port
 
-    device1_ip = args.devicehosts[0]
-    device1_ip = args.devicehosts[1]
+    device1_ip = args.d1host
+    device1_ip = args.d2host
 
-    device1_port = args.deviceports[0]
-    device2_port = args.deviceports[1]
+    device1_port = args.d1port
+    device2_port = args.d2port
+
+    logger.info(device1_ip)
+    logger.info(device2_ip)
+    logger.info(device1_port)
+    logger.info(device2_port)
     
 
     if args.debug == "off":

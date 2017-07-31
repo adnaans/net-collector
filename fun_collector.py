@@ -125,14 +125,14 @@ def serve():
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='localhost',
                         help='OpenConfig server host')
-    parser.add_argument('--port', type=int, default=9032,
+    parser.add_argument('--port', type=int, default="",
                         help='OpenConfig server port')
 
     parser.add_argument('--devicehosts', type=list, default=[])
     parser.add_argument('--deviceports', type=list, default=[])
 
     #parser.add_argument('--sample', type=int, default=1,
-                        help='how many messages to be aggregated')
+    #                   help='how many messages to be aggregated')
     parser.add_argument('--debug', type=str, default='on', help='debug level')
     args = parser.parse_args()
 

@@ -40,7 +40,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         pass
 
     def getPacketData(self, path):
-        packet = scapy.sniff(count=1)[0]
+        packet = scapy.sniff(count=1)[0] #this could use some changes... i think it stalls if there are no packets. maybe timeout?
         if packet:
           logger.info("A packet has been collected...")
         ethernet = gnmi_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)

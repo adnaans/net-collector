@@ -42,22 +42,22 @@ def encodePath(path):
         pathStrs = pathStrs + "." + pstr
     return pathStrs[1:]
 
-def processPacket(response): #HAVE TO FIX THIS METHOD TO DEAL WITH AN IPPAIRBATCH OF ip string pairs 
+def processPacket(response): 
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        pairs = update.val
-        print(pairs)
-        for pair in pairs: 
+        batch = update.val
+        print(batch)
+        for pair in batch.ip: 
             if(pair.src()=="10.0.0.1" or pair.dst()=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         
-        ptg = (badcounter/(len(pairs))*100
-        processSites(ptg)
+        ptg = (badcounter*100)/(len(pairs))
+        self.processSites(ptg)
         badcounter = 0
 
 def processSites(ptg):
-    if ptg > 20:
+    if ptg > 10: #value very low. 
         backToWork()
 
 def backToWork(response):

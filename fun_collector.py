@@ -143,6 +143,14 @@ def serve():
 
     #global interval
     #interval = args.sample
+
+    global device1_ip
+    global device2_ip
+    global device1_port
+    global device2_port
+    global host_ip
+    global host_port
+
     host_ip = args.host
     host_port = args.port
 

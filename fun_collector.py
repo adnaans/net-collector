@@ -76,6 +76,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
     def Subscribe(self, request_iterator, context):
         logger.info("Collector has received a subscribe request.")
         #create a channel connecting to the southbound device
+        logger.info("Connecting to: " + device1_ip + " : " + device1_port)
+        logger.info("Connecting to: " + device2_ip + " : " + device2_port)
         channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
         stub1 = gnmi_pb2.gNMIStub(channel1)
 

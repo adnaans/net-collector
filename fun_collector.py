@@ -4,6 +4,9 @@ Simple Collector, initiates gNMI calls to multiple fun_probes and aggregates
 
 import gnmi.gnmi_pb2_grpc as gnmi_pb2_grpc
 import gnmi.gnmi_pb2 as gnmi_pb2
+
+import gnmi.pkt_pb2 as pkt_pb2
+
 from pathtree.pathtree import Branch as Branch 
 from pathtree.pathtree import Path
 import grpc
@@ -47,7 +50,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
     def filterAndPackage(self, update):
         src = update.IP().src()
         dst = update.IP().dst()
-        fixedUpdate = gnmi_pb2.IpPair(src=src, dst=dst)
+        fixedUpdate = pkt_pb2.IpPair(src=src, dst=dst)
         return fixedUpdate
 
     def stream(self, stub, request_iterator):  
@@ -65,7 +68,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             pkgdPkt = processingQ.get()
             PAIR_LIST.append(pkgdPkt)
             if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100
-                batch = gnmi_pb2.IpPairBatch()
+                batch = pkt_pb2.IpPairBatch()
                 for pair in PAIR_LIST:
                     batch.add_ip(pair)
                     #saveToPathTree(batch)

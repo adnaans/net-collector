@@ -46,9 +46,9 @@ def processPacket(response): #HAVE TO FIX THIS METHOD TO DEAL WITH AN IPPAIRBATC
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        pairs = update.val
-        print(pairs)
-        for pair in pairs: 
+        batch = update.val
+        print(batch)
+        for pair in batch.ip: 
             if(pair.src() in badsites or pair.dst() in badsites or pair.src()=="10.0.0.1" or pair.dst()=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         

@@ -47,25 +47,25 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         if scapy.Ether in packet:
             ethernet = pkt_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)
         else:
-            ethernet = null
+            ethernet = None
         if scapy.IP in packet:
             ipp = pkt_pb2.IP(version=packet[scapy.IP].version, ihl=packet[scapy.IP].ihl, tos=packet[scapy.IP].tos,
                                 len=packet[scapy.IP].len, id=packet[scapy.IP].id, flags=packet[scapy.IP].flags,
                                 frag=packet[scapy.IP].frag, ttl=packet[scapy.IP].ttl, proto=packet[scapy.IP].proto,
                                 chksum=packet[scapy.IP].chksum, src=packet[scapy.IP].src, dst=packet[scapy.IP].dst)
         else:
-            ipp = null
+            ipp = None
         if scapy.TCP in packet:
             tcp = pkt_pb2.TCP(sport=packet[scapy.TCP].sport, dport=packet[scapy.TCP].dport, seq=packet[scapy.TCP].seq,
                                 ack=packet[scapy.TCP].ack, dataofs=packet[scapy.TCP].dataofs, reserved=packet[scapy.TCP].reserved,
                                 flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum,
                                 urgptr=packet[scapy.TCP].urgptr)
         else:
-            tcp = null
+            tcp = None
         if scapy.Raw in packet:
             raw = pkt_pb2.Raw(load=packet[scapy.Raw].load.encode("utf-8"))
         else:
-            raw = null
+            raw = None
         gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
         update = gnmi_pb2.Update(path=path,val=gnmiPacket)
         return update

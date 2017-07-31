@@ -147,7 +147,7 @@ def serve():
     host_port = args.port
 
     device1_ip = args.d1host
-    device1_ip = args.d2host
+    device2_ip = args.d2host
 
     device1_port = args.d1port
     device2_port = args.d2port

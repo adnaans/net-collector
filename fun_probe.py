@@ -6,6 +6,8 @@ pulls packet data, feeds to collector through gNMI
 import grpc
 import gnmi.gnmi_pb2 as gnmi_pb2
 import gnmi.gnmi_pb2_grpc as gnmi_pb2_grpc
+import gnmi.pkt_pb2 as pkt_pb2
+
 from concurrent import futures
 import time
 import datetime
@@ -42,17 +44,17 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         packet = scapy.sniff(count=1)[0]
         if packet:
           logger.info("A packet has been collected...")
-        ethernet = gnmi_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)
-        ipp = gnmi_pb2.IP(version=packet[scapy.IP].version, ihl=packet[scapy.IP].ihl, tos=packet[scapy.IP].tos,
+        ethernet = pkt_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)
+        ipp = pkt_pb2.IP(version=packet[scapy.IP].version, ihl=packet[scapy.IP].ihl, tos=packet[scapy.IP].tos,
                             len=packet[scapy.IP].len, id=packet[scapy.IP].id, flags=packet[scapy.IP].flags,
                             frag=packet[scapy.IP].frag, ttl=packet[scapy.IP].ttl, proto=packet[scapy.IP].proto,
                             chksum=packet[scapy.IP].chksum, src=packet[scapy.IP].src, dst=packet[scapy.IP].dst)
-        tcp = gnmi_pb2.TCP(sport=packet[scapy.TCP].sport, dport=packet[scapy.TCP].dport, seq=packet[scapy.TCP].seq,
+        tcp = pkt_pb2.TCP(sport=packet[scapy.TCP].sport, dport=packet[scapy.TCP].dport, seq=packet[scapy.TCP].seq,
                             ack=packet[scapy.TCP].ack, dataofs=packet[scapy.TCP].dataofs, reserved=packet[scapy.TCP].reserved,
                             flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum,
                             urgptr=packet[scapy.TCP].urgptr, options=packet[scapy.TCP].options)
-        raw = gnmi_pb2.Raw(load=packet[scapy.Raw].load)
-        gnmiPacket = gnmi_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
+        raw = pkt_pb2.Raw(load=packet[scapy.Raw].load)
+        gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
 
         return gnmiPacket
 

@@ -61,7 +61,7 @@ message TCP {
 }
 
 message Raw {
-  string load = 1;
+  google.protobuf.Any load = 1;
 }
 
 //For filtering 

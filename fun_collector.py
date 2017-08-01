@@ -71,7 +71,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         while True: 
             pkgdPkt = processingQ.get()
             PAIR_LIST.append(pkgdPkt)
-            if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO
+            if (len(PAIR_LIST)>=10): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO
                 logger.info("100 packets bro :D")
                 batch = pkt_pb2.IpPairBatch()
                 for pair in PAIR_LIST:

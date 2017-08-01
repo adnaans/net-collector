@@ -48,8 +48,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         self.ptree = Branch() 
 
     def filterAndPackage(self, update):
-        src = update.update.pkt_val.i.src
-        dst = update.update.pkt_val.i.dst
+        src = update.update().pkt_val().i().src()
+        dst = update.update().pkt_val().i().dst()
         fixedUpdate = pkt_pb2.IpPair(src=src, dst=dst)
         return fixedUpdate
 

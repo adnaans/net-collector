@@ -51,10 +51,11 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         logger.info("filterAndPackage recieves an update of type: " + str(type(notif)))
         updates = notif.update
         logger.info(len(updates))
-        src = notif.update.pkt_val.i.src
-        dst = notif.update.pkt_val.i.dst
-        fixedUpdate = pkt_pb2.IpPair(src=src, dst=dst)
-        return fixedUpdate
+        for u in updates: #updates should always be len 1-- something to handle l8r bro
+            src = notif.update.pkt_val.i.src
+            dst = notif.update.pkt_val.i.dst
+            fixedUpdate = pkt_pb2.IpPair(src=src, dst=dst)
+            return fixedUpdate
 
     def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator):

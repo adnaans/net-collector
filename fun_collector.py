@@ -52,8 +52,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         updates = notif.update
         logger.info(len(updates))
         for u in updates: #updates should always be len 1-- something to handle l8r bro
-            src = notif.update.pkt_val.i.src
-            dst = notif.update.pkt_val.i.dst
+            src = u.pkt_val.i.src
+            dst = u.pkt_val.i.dst
             fixedUpdate = pkt_pb2.IpPair(src=src, dst=dst)
             return fixedUpdate
 

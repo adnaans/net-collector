@@ -49,7 +49,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def filterAndPackage(self, notif):
         updates = notif.update
-        logger.info(len(updates))
+        logger.info("filterAndPackage called")
         for u in updates: #updates should always be len 1-- something to handle l8r bro
             src = u.pkt_val.i.src
             dst = u.pkt_val.i.dst
@@ -58,6 +58,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator):
+            logger.info("Some response has been received from this stub:" + str(stub))
             if response.update:
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:

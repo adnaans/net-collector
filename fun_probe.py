@@ -65,7 +65,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         else:
             tcp = None
         if scapy.Raw in packet:
-            raw = pkt_pb2.Raw(load=packet[scapy.Raw].load.decode("utf-8"))
+            raw = pkt_pb2.Raw(load=packet[scapy.Raw].load)
         else:
             raw = None
         gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)

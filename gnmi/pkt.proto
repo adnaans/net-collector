@@ -35,28 +35,28 @@ message Ethernet {
 message IP {
   int64 version = 1;
   int64 ihl = 2;
-  int32 tos = 3;
-  int32 len = 4;
-  int32 id = 5;
+  int64 tos = 3;
+  int64 len = 4;
+  int64 id = 5;
   int64 flags = 6;
   int64 frag = 7;
-  int32 ttl = 8;
-  int32 proto = 9;
-  int32 chksum = 10;
+  int64 ttl = 8;
+  int64 proto = 9;
+  int64 chksum = 10;
   string dst = 11;
   string src = 12;
 }
 
 message TCP {
-  int32 sport = 1;
-  int32 dport = 2;
-  int32 seq = 3;
-  int32 ack = 4;
+  int64 sport = 1;
+  int64 dport = 2;
+  int64 seq = 3;
+  int64 ack = 4;
   int64 dataofs = 5;
   int64 reserved = 6;
   int64 flags = 7;
-  int32 window = 8;
-  int32 chksum = 9;
+  int64 window = 8;
+  int64 chksum = 9;
   int64 urgptr = 10;
 }
 

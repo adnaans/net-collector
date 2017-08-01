@@ -94,6 +94,7 @@ message Update {
     TypedValue typedval = 3;                 // The explicitly typed update value.
   //THIS IS AN ADDITION MADE ... SEE SOMETHING ABOUT THIS LATER
     Packet pkt_val = 4;
+    IpPairBatch batch_val = 5;
   }
 }
 

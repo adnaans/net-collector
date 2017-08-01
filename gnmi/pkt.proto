@@ -61,7 +61,7 @@ message TCP {
 }
 
 message Raw {
-  bytes load = 1;
+  string load = 1;
 }
 
 //For filtering 

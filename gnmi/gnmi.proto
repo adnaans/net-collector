@@ -17,7 +17,7 @@ syntax = "proto3";
 
 import "github.com/golang/protobuf/ptypes/any/any.proto";
 import "github.com/google/protobuf/src/google/protobuf/descriptor.proto";
-import pkt_pb2 as pkt
+import "pkt.proto"
 
 // Package gNMI defines a service specification for the gRPC Network Management
 // Interface. This interface is defined to be a standard interface via which

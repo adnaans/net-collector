@@ -63,13 +63,14 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             logger.info("Some response has been received from this stub:" + str(stub))
             if response.update:
                 processingQ.put(self.filterAndPackage(response.update)) 
+                logger.info("Something was put into the processing Q.")
             else:
                 pass
 
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
         logger.info("thread to aggregate off collection q called.")
         while True: 
-            while pkgdPkt = None:
+            while pkgdPkt == None:
                 try: 
                     pkgdPkt = processingQ.get() #STUCK HERE
                 except Queue.Empty:

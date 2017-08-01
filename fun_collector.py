@@ -48,16 +48,19 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         self.ptree = Branch() 
 
     def filterAndPackage(self, update):
-        src = update.update().pkt_val().i().src()
-        dst = update.update().pkt_val().i().dst()
+        logger.info("filterAndPackage recieves an update of type: " + str(type(update)))
+        src = update.update.val.i.src
+        dst = update.update.val.i.dst
         fixedUpdate = pkt_pb2.IpPair(src=src, dst=dst)
         return fixedUpdate
 
     def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator):
             logger.debug(response)
+            logger.info("RESPONSE IS OF TYPE: "+ str(type(response)))
             if response.update:
                 logger.info("Collector has registered a response.")
+                logger.info("THE response's UPDATE field is of type: " + str(type(respone.update)))
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:
                 pass

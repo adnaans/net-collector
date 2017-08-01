@@ -69,6 +69,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 pass
 
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
+        logger.info("thread to aggregate off collection q called.")
         PAIR_LIST = []
         while True: 
             pkgdPkt = processingQ.get()
@@ -110,7 +111,9 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 update_msg = [batch]
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
-                yield gnmi_pb2.SubscribeResponse(update=notif)
+                response = gnmi_pb2.SubscribeResponse(update=notif)
+                logger.debug(response)
+                yield response
 
         print "Streaming done!"
     

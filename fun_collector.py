@@ -55,9 +55,11 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator):
+            print("What is response, bro?" + type(response))
             logger.debug(response)
             if response.update:
                 logger.info("Collector has registered a response.")
+                print("What is response.update, bro?" + type(response.update))
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:
                 pass

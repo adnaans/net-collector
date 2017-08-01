@@ -106,8 +106,11 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         processingT = threading.Thread(target=self.processThatQ)
         while True:
             for q in queues:
-                yield q.get()
-
+                batch = q.get()
+                update_msg = [batch]
+                tm = int(time.time() * 1000)
+                notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
+                yield gnmi_pb2.SubscribeResponse(update=notif)
 
         print "Streaming done!"
     

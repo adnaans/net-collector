@@ -101,6 +101,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             threads.append(t) #is this even needed bro
             t.start()
         processingT = threading.Thread(target=self.processThatQ)
+        processingT.start()
         while True:
             for q in queues:
                 batch = q.get()

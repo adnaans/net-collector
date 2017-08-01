@@ -23,10 +23,10 @@ app.use( bodyParser.json() );
 
 app.post('/post', function (req, res) {
   console.log(req.body)
-  if(req.body['ptg']){
+  if(req.body['decision']){
     io.emit('backtowork');
   }
-  else if(!req.body['ptg']){
+  else if(!req.body['decision']){
     io.emit('keepworking');
   }
   else{

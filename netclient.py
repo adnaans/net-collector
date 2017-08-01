@@ -56,7 +56,7 @@ def processPacket(response): #HAVE TO FIX THIS METHOD TO DEAL WITH AN IPPAIRBATC
             decision=True
         elif(badcounter/(len(pairs))*100<=15):
             decision=False
-        requests.post('http://localhost:3002/post', json = { 'decision' : decision })
+        requests.post('http://localhost:3000/post', json = { 'decision' : decision })
         badcounter = 0
 
 # def backToWork():

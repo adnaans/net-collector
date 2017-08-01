@@ -82,10 +82,10 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         logger.info("Connecting to: " + device1_ip + " : " + device1_port)
         logger.info("Connecting to: " + device2_ip + " : " + device2_port)
         channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
-        stub1 = gnmi_pb2.gNMIStub(channel1)
+        stub1 = gnmi_pb2_grpc.gNMIStub(channel1)
 
         channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
-        stub2 = gnmi_pb2.gNMIStub(channel2)
+        stub2 = gnmi_pb2_grpc.gNMIStub(channel2)
 
         q = Queue.Queue()
         queues.append(q)

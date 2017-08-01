@@ -60,7 +60,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             logger.info("RESPONSE IS OF TYPE: "+ str(type(response)))
             if response.update:
                 logger.info("Collector has registered a response.")
-                logger.info("THE response's UPDATE field is of type: " + str(type(respone.update)))
+                logger.info("THE response's UPDATE field is of type: " + str(type(resposne.update)))
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:
                 pass

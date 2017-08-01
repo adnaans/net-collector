@@ -49,15 +49,15 @@ def processPacket(response):
         batch = update.val
         print(batch)
         for pair in batch.ip: 
-            if(pair.src()=="10.0.0.1" or pair.dst()=="10.0.0.1"): #consider hashset
+            if(pair.src=="10.0.0.1" or pair.dst=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         
-        ptg = (badcounter*100)/(len(pairs))
+        ptg = badcounter/(len(batch.ip))
         self.processSites(ptg)
         badcounter = 0
 
 def processSites(ptg):
-    if ptg > 10: #value very low. 
+    if ptg > 0.05: #value very low. 
         backToWork()
 
 def backToWork(response):

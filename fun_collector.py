@@ -75,8 +75,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 for pair in PAIR_LIST:
                     batch.add_ip(pair)
                     #saveToPathTree(batch)
-                    for q in queues:
-                        q.put(batch)
+                for q in queues:
+                    q.put(batch)
                     del PAIR_LIST[:]
 
     def Subscribe(self, request_iterator, context):

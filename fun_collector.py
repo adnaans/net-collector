@@ -54,7 +54,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         for u in updates: #updates should always be len 1-- something to handle l8r bro
             src = u.pkt_val.i.src
             dst = u.pkt_val.i.dst
-            fixedUpdate = pkt_pb2.IpPair(src=src, dst=dst)
+            fixedUpdate = pkt_pb2.IpPair(src=src, dest=dst)
             return fixedUpdate
 
     def stream(self, stub, request_iterator):  

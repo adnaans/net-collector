@@ -56,8 +56,8 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         else:
             ipp = None
         if scapy.TCP in packet:
-            logger.info("window: " + packet[scapy.TCP].window)
-            logger.info("flags: " + packet[scapy.TCP].flags)
+            logger.info("window: " + str(packet[scapy.TCP].window))
+            logger.info("flags: " + str(packet[scapy.TCP].flags))
             tcp = pkt_pb2.TCP(sport=packet[scapy.TCP].sport, dport=packet[scapy.TCP].dport, seq=packet[scapy.TCP].seq,
                                 ack=packet[scapy.TCP].ack, dataofs=packet[scapy.TCP].dataofs, reserved=packet[scapy.TCP].reserved,
                                 flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum)

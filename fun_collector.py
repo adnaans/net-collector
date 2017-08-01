@@ -48,9 +48,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         self.ptree = Branch() 
 
     def filterAndPackage(self, notif):
-        logger.info("filterAndPackage recieves an update of type: " + str(type(notif)))
         updates = notif.update
-        logger.info(len(updates))
+        logger.info("filterAndPackage called")
         for u in updates: #updates should always be len 1-- something to handle l8r bro
             src = u.pkt_val.i.src
             dst = u.pkt_val.i.dst
@@ -59,16 +58,14 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator):
-            logger.debug(response)
-            logger.info("RESPONSE IS OF TYPE: "+ str(type(response)))
+            logger.info("Some response has been received from this stub:" + str(stub))
             if response.update:
-                logger.info("Collector has registered a response.")
-                logger.info("THE response's UPDATE field is of type: " + str(type(response.update)))
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:
                 pass
 
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
+        logger.info("thread to aggregate off collection q called.")
         PAIR_LIST = []
         while True: 
             pkgdPkt = processingQ.get()
@@ -104,13 +101,17 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             threads.append(t) #is this even needed bro
             t.start()
         processingT = threading.Thread(target=self.processThatQ)
+        processingT.start()
         while True:
             for q in queues:
                 batch = q.get()
                 update_msg = [batch]
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
-                yield gnmi_pb2.SubscribeResponse(update=notif)
+                response = gnmi_pb2.SubscribeResponse(update=notif)
+                logger.info("This is what the collector is trying to send to the client:")
+                logger.debug(response)
+                yield response
 
         print "Streaming done!"
     

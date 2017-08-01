@@ -46,12 +46,11 @@ def processPacket(response):
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        batch = update.val
+        batch = update.batch_val
         print(batch)
         for pair in batch.ip: 
             if(pair.src=="10.0.0.1" or pair.dst=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
-        
         ptg = badcounter/(len(batch.ip))
         self.processSites(ptg)
         badcounter = 0
@@ -71,6 +70,7 @@ def get(stub, path_str, metadata):
     print(response)
 
 def subscribe(stub, path_str, mode, metadata):
+    logger.info("Client's subscribe method was called.")
     global nums
     """Subscribe and echo the stream"""
     logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
@@ -78,6 +78,7 @@ def subscribe(stub, path_str, mode, metadata):
     i = 500
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
+            logger.info("Response registered.")
             logger.debug(response)
             processPacket(response)
             i += 500

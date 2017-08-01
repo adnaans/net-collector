@@ -90,9 +90,11 @@ message Notification {
 message Update {
   Path path = 1;                      // The path (key) for the update.
   Value value = 2 [deprecated=true];  // The value (value) for the update.
-  TypedValue val = 3;                 // The explicitly typed update value.
+  oneof val {
+    TypedValue typedval = 3;                 // The explicitly typed update value.
   //THIS IS AN ADDITION MADE ... SEE SOMETHING ABOUT THIS LATER
-  pkt.Packet pkt_val = 4;
+    Packet pkt_val = 4;
+  }
 }
 
 // TypedValue is used to encode a value being sent between the client and

@@ -47,10 +47,10 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         #initiate an empty pathtree for storing updates from the probes
         self.ptree = Branch() 
 
-    def filterAndPackage(self, update):
+    def filterAndPackage(self, notif):
         logger.info("filterAndPackage recieves an update of type: " + str(type(update)))
-        src = update.update.val.i.src
-        dst = update.update.val.i.dst
+        src = notif.update.pkt_val.i.src
+        dst = notif.update.pkt_val.i.dst
         fixedUpdate = pkt_pb2.IpPair(src=src, dst=dst)
         return fixedUpdate
 

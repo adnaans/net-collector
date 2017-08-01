@@ -41,6 +41,8 @@ host_port = ""
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
+PAIR_LIST = []
+
 class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def __init__(self):
@@ -66,11 +68,10 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
         logger.info("thread to aggregate off collection q called.")
-        PAIR_LIST = []
         while True: 
             pkgdPkt = processingQ.get()
             PAIR_LIST.append(pkgdPkt)
-            if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100
+            if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO
                 logger.info("100 packets bro :D")
                 batch = pkt_pb2.IpPairBatch()
                 for pair in PAIR_LIST:

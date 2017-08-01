@@ -71,12 +71,14 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             pkgdPkt = processingQ.get()
             PAIR_LIST.append(pkgdPkt)
             if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100
+                logger.info("100 packets bro :D")
                 batch = pkt_pb2.IpPairBatch()
                 for pair in PAIR_LIST:
                     batch.add_ip(pair)
                     #saveToPathTree(batch)
                 for q in queues:
                     q.put(batch)
+                    logger.info("SUPER IMPORTANT I PUT SOMETHING IN THE QUEUE!!! BRO")
                     del PAIR_LIST[:]
 
     def Subscribe(self, request_iterator, context):

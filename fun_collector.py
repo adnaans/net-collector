@@ -69,7 +69,12 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
         logger.info("thread to aggregate off collection q called.")
         while True: 
-            pkgdPkt = processingQ.get()
+            while pkgdPkt = None:
+                try: 
+                    pkgdPkt = processingQ.get() #STUCK HERE
+                except Queue.Empty:
+                    pkgdPkt = None:
+            logger.info("I PULLED SUCCESSFULLY FROM THE QUEUE.")
             PAIR_LIST.append(pkgdPkt)
             logger.info("THIS IS THE LENGTH OF PAIRLIST, BRO: " + len(PAIR_LIST))
             if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO

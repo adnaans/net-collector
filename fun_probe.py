@@ -65,11 +65,11 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         else:
             tcp = None
         if scapy.Raw in packet:
-            raw = pkt_pb2.Raw(load=packet[scapy.Raw].load)
+            raw = pkt_pb2.Raw(load=packet[scapy.Raw].load) #if this doesn't work try decode('utf-16')
         else:
             raw = None
         gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
-        update = gnmi_pb2.Update(path=path,val=gnmiPacket)
+        update = gnmi_pb2.Update(path=path, pkt_val=gnmiPacket)
         return update
 
     def Subscribe(self, request_iterator, context): #not 100% sure what is happening here. 

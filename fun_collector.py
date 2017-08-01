@@ -58,7 +58,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             logger.debug(response)
             if response.update:
                 logger.info("Collector has registered a response.")
-                processingQ.put(filterAndPackage(response.update)) 
+                processingQ.put(self.filterAndPackage(response.update)) 
             else:
                 pass
 

@@ -72,7 +72,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         while True: 
             while pkgdPkt == None:
                 try: 
-                    pkgdPkt = processingQ.get() #STUCK HERE
+                    pkgdPkt = processingQ.get(False) #STUCK HERE
                 except Queue.Empty:
                     pkgdPkt = None
             logger.info("I PULLED SUCCESSFULLY FROM THE QUEUE.")

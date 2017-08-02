@@ -121,8 +121,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                     logger.info("failed batch get")
                     batch = None
                 if batch!=None:
-                    update_msg = [batch]
                     tm = int(time.time() * 1000)
+                    update_msg = [gnmi_pb2.Update(batch_val=batch)]
                     notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                     response = gnmi_pb2.SubscribeResponse(update=notif)
                     logger.info("This is what the collector is trying to send to the client:")

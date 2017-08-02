@@ -61,14 +61,14 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         for response in stub.Subscribe(request_iterator):
             if response.update:
                 processingQ.put(self.filterAndPackage(response.update)) 
-                logger.info("from stream thread: the size of the proccessingQ is:" +processingQ.qsize())
+                logger.info("from stream thread: the size of the proccessingQ is:" + str(processingQ.qsize()))
             else:
                 pass
 
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
         logger.info("thread to aggregate off collection q called.")
         while True: 
-            logger.info('from processing thread: size of the processingq is :' + processingQ.qsize())
+            logger.info('from processing thread: size of the processingq is :' + str(processingQ.qsize()))
             try: 
                 pkgdPkt = processingQ.get(False) #STUCK HERE
                 logger.info("tried to pull something off the queue.")

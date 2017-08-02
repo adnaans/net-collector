@@ -125,8 +125,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                     update_msg = [gnmi_pb2.Update(batch_val=batch)]
                     notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                     response = gnmi_pb2.SubscribeResponse(update=notif)
-                    logger.info("This is what the collector is trying to send to the client:")
-                    logger.debug(response)
+                    logger.info("This is what the collector is trying to send to the client: ")
                     yield response
 
         print "Streaming done!"

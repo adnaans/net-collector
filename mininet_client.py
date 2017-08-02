@@ -44,6 +44,9 @@ def encodePath(path):
     return pathStrs[1:]
 
 def processPacket(response): 
+    logger.debug(response)
+    logger.debug(response.update)
+    logger.debug(response.update.update)
     for update in response.update.update:
         logger.info("The type of this update is : " + str(type(update)))
         path_metric = encodePath(update.path.elem)

@@ -117,7 +117,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 try: 
                     batch = q.get(False)
                     logger.info("trying to get a batch from the subscription queue.")
-                except Queue.Empty():
+                except Queue.Empty:
                     logger.info("failed batch get")
                     batch = None
                 if batch!=None:

@@ -5,8 +5,8 @@ import time
 
 import grpc.framework.interfaces.face
 import gnmi.gnmi_pb2 as gnmi_pb2
+import pyopenconfig.gnmi_pb2 as openconfig_gnmi
 import pyopenconfig.resources
-import gnmi.gnmi_pb2_grpc as gnmi_pb2_grpc
 
 import atexit
 from scapy.all import *
@@ -48,8 +48,7 @@ def processPacket(response):
         logger.info("The type of this update is : " + str(type(update)))
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        value = update.value
-        path = update.path
+        logger.info(str(update.ListFields()))
         batch = update.batch_val
         print(batch)
         for pair in batch.ip: 
@@ -83,7 +82,7 @@ def subscribe(stub, path_str, mode, metadata):
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
             logger.info("Response registered.")
-            logger.info("This response is a: " + str(type(response)))
+            logger.debug(response)
             processPacket(response)
             i += 500
             nums = i
@@ -135,7 +134,7 @@ def run():
         metadata = [("username", args.username), ("password", args.password)]
 
     channel = grpc.insecure_channel(args.host + ":" + str(args.port))
-    stub = gnmi_pb2_grpc.gNMIStub(channel)
+    stub = openconfig_gnmi.gNMIStub(channel)
 
     atexit.register(shutdown_hook) 
 

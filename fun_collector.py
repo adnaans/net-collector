@@ -67,29 +67,26 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
         logger.info("thread to aggregate off collection q called.")
-        pkgdPt = None
         while True: 
-            global pkgdPkt
-            while pkgdPkt == None:
-                logger.info('from processing thread: size of the processingq is :' + processingQ.qsize())
-                try: 
-                    pkgdPkt = processingQ.get(False) #STUCK HERE
-                    logger.info("tried to pull something off the queue.")
-                except Queue.Empty:
+            logger.info('from processing thread: size of the processingq is :' + processingQ.qsize())
+            try: 
+                pkgdPkt = processingQ.get(False) #STUCK HERE
+                logger.info("tried to pull something off the queue.")
+            except Queue.Empty:
                     logger.info("pulled nothing off queue.")
                     pkgdPkt = None
-            logger.info("I PULLED SUCCESSFULLY FROM THE QUEUE.")
-            PAIR_LIST.append(pkgdPkt)
-            logger.info("THIS IS THE LENGTH OF PAIRLIST, BRO: " + len(PAIR_LIST))
-            if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO
-                logger.info("100 packets bro :D")
-                batch = pkt_pb2.IpPairBatch()
-                for pair in PAIR_LIST:
-                    batch.add_ip(pair)
-                    #saveToPathTree(batch)
-                for q in queues:
-                    q.put(batch)
-                    logger.info("SUPER IMPORTANT I PUT SOMETHING IN THE QUEUE!!! BRO")
+            if pkgdPkt != None: 
+                logger.info("I PULLED SUCCESSFULLY FROM THE QUEUE.")
+                PAIR_LIST.append(pkgdPkt)
+                logger.info("THIS IS THE LENGTH OF PAIRLIST, BRO: " + len(PAIR_LIST))
+                if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO
+                    logger.info("100 packets bro :D")
+                    batch = pkt_pb2.IpPairBatch()
+                    for pair in PAIR_LIST:
+                        batch.add_ip(pair)
+                        for q in queues:
+                            q.put(batch)
+                            logger.info("SUPER IMPORTANT I PUT SOMETHING IN THE QUEUE!!! BRO")
                     del PAIR_LIST[:]
 
     def Subscribe(self, request_iterator, context):

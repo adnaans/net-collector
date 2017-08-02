@@ -5,8 +5,8 @@ import time
 
 import grpc.framework.interfaces.face
 import gnmi.gnmi_pb2 as gnmi_pb2
-import pyopenconfig.gnmi_pb2 as openconfig_gnmi
 import pyopenconfig.resources
+import gnmi.gnmi_pb2_grpc as gnmi_pb2_grpc
 
 import atexit
 from scapy.all import *
@@ -135,7 +135,7 @@ def run():
         metadata = [("username", args.username), ("password", args.password)]
 
     channel = grpc.insecure_channel(args.host + ":" + str(args.port))
-    stub = openconfig_gnmi.gNMIStub(channel)
+    stub = gnmi_pb2_grpc.gNMIStub(channel)
 
     atexit.register(shutdown_hook) 
 

@@ -17,6 +17,7 @@ import argparse
 
 import Queue
 import threading 
+import copy
 
 from scapy.all import *
 
@@ -94,11 +95,15 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         q = Queue.Queue()
         queues.append(q)
 
+        iter1 = request_iterator
+        iter2 = copy.deepcopy(iter1)
+
         #start streaming
         stubs = [stub1, stub2]
+        iters = [iter1, iter2]
         threads = []
         for stub in stubs:
-            t = threading.Thread(target=self.stream, args=(stub, request_iterator))
+            t = threading.Thread(target=self.stream, args=(stub, iters[stubs.index(stub)]))
             threads.append(t) #is this even needed bro
             t.start()
         processingT = threading.Thread(target=self.processThatQ)

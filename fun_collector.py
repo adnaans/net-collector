@@ -51,7 +51,6 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def filterAndPackage(self, notif):
         updates = notif.update
-        logger.info("filterAndPackage called")
         for u in updates: #updates should always be len 1-- something to handle l8r bro
             src = u.pkt_val.i.src
             dst = u.pkt_val.i.dst
@@ -60,10 +59,9 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator):
-            logger.info("Some response has been received from this stub:" + str(stub))
             if response.update:
                 processingQ.put(self.filterAndPackage(response.update)) 
-                logger.info("Something was put into the processing Q.")
+                logger.info("from stream thread: the size of the proccessingQ is:" +processingQ.qsize())
             else:
                 pass
 
@@ -71,8 +69,9 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         logger.info("thread to aggregate off collection q called.")
         pkgdPt = None
         while True: 
+            global pkgdPkt
             while pkgdPkt == None:
-                logger.info('The size of the processing q is :' + processingQ.qsize())
+                logger.info('from processing thread: size of the processingq is :' + processingQ.qsize())
                 try: 
                     pkgdPkt = processingQ.get(False) #STUCK HERE
                     logger.info("tried to pull something off the queue.")

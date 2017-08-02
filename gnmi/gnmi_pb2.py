@@ -1667,4 +1667,266 @@ _SETRESPONSE.fields_by_name['message'].has_options = True
 _SETRESPONSE.fields_by_name['message']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))
 _UPDATERESULT.fields_by_name['timestamp'].has_options = True
 _UPDATERESULT.fields_by_name['timestamp']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))
+try:
+  # THESE ELEMENTS WILL BE DEPRECATED.
+  # Please use the generated *_pb2_grpc.py files instead.
+  import grpc
+  from grpc.beta import implementations as beta_implementations
+  from grpc.beta import interfaces as beta_interfaces
+  from grpc.framework.common import cardinality
+  from grpc.framework.interfaces.face import utilities as face_utilities
+
+
+  class gNMIStub(object):
+    # missing associated documentation comment in .proto file
+    pass
+
+    def __init__(self, channel):
+      """Constructor.
+
+      Args:
+        channel: A grpc.Channel.
+      """
+      self.Capabilities = channel.unary_unary(
+          '/gnmi.gNMI/Capabilities',
+          request_serializer=CapabilityRequest.SerializeToString,
+          response_deserializer=CapabilityResponse.FromString,
+          )
+      self.Get = channel.unary_unary(
+          '/gnmi.gNMI/Get',
+          request_serializer=GetRequest.SerializeToString,
+          response_deserializer=GetResponse.FromString,
+          )
+      self.Set = channel.unary_unary(
+          '/gnmi.gNMI/Set',
+          request_serializer=SetRequest.SerializeToString,
+          response_deserializer=SetResponse.FromString,
+          )
+      self.Subscribe = channel.stream_stream(
+          '/gnmi.gNMI/Subscribe',
+          request_serializer=SubscribeRequest.SerializeToString,
+          response_deserializer=SubscribeResponse.FromString,
+          )
+
+
+  class gNMIServicer(object):
+    # missing associated documentation comment in .proto file
+    pass
+
+    def Capabilities(self, request, context):
+      """Capabilities allows the client to retrieve the set of capabilities that
+      is supported by the target. This allows the target to validate the
+      service version that is implemented and retrieve the set of models that
+      the target supports. The models can then be specified in subsequent RPCs
+      to restrict the set of data that is utilized.
+      Reference: gNMI Specification Section 3.2
+      """
+      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+      context.set_details('Method not implemented!')
+      raise NotImplementedError('Method not implemented!')
+
+    def Get(self, request, context):
+      """Retrieve a snapshot of data from the target. A Get RPC requests that the
+      target snapshots a subset of the data tree as specified by the paths
+      included in the message and serializes this to be returned to the
+      client using the specified encoding.
+      Reference: gNMI Specification Section 3.3
+      """
+      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+      context.set_details('Method not implemented!')
+      raise NotImplementedError('Method not implemented!')
+
+    def Set(self, request, context):
+      """Set allows the client to modify the state of data on the target. The
+      paths to modified along with the new values that the client wishes
+      to set the value to.
+      Reference: gNMI Specification Section 3.4
+      """
+      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+      context.set_details('Method not implemented!')
+      raise NotImplementedError('Method not implemented!')
+
+    def Subscribe(self, request_iterator, context):
+      """Subscribe allows a client to request the target to send it values
+      of particular paths within the data tree. These values may be streamed
+      at a particular cadence (STREAM), sent one off on a long-lived channel
+      (POLL), or sent as a one-off retrieval (ONCE).
+      Reference: gNMI Specification Section 3.5
+      """
+      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+      context.set_details('Method not implemented!')
+      raise NotImplementedError('Method not implemented!')
+
+
+  def add_gNMIServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+        'Capabilities': grpc.unary_unary_rpc_method_handler(
+            servicer.Capabilities,
+            request_deserializer=CapabilityRequest.FromString,
+            response_serializer=CapabilityResponse.SerializeToString,
+        ),
+        'Get': grpc.unary_unary_rpc_method_handler(
+            servicer.Get,
+            request_deserializer=GetRequest.FromString,
+            response_serializer=GetResponse.SerializeToString,
+        ),
+        'Set': grpc.unary_unary_rpc_method_handler(
+            servicer.Set,
+            request_deserializer=SetRequest.FromString,
+            response_serializer=SetResponse.SerializeToString,
+        ),
+        'Subscribe': grpc.stream_stream_rpc_method_handler(
+            servicer.Subscribe,
+            request_deserializer=SubscribeRequest.FromString,
+            response_serializer=SubscribeResponse.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        'gnmi.gNMI', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+  class BetagNMIServicer(object):
+    """The Beta API is deprecated for 0.15.0 and later.
+
+    It is recommended to use the GA API (classes and functions in this
+    file not marked beta) for all further purposes. This class was generated
+    only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
+    # missing associated documentation comment in .proto file
+    pass
+    def Capabilities(self, request, context):
+      """Capabilities allows the client to retrieve the set of capabilities that
+      is supported by the target. This allows the target to validate the
+      service version that is implemented and retrieve the set of models that
+      the target supports. The models can then be specified in subsequent RPCs
+      to restrict the set of data that is utilized.
+      Reference: gNMI Specification Section 3.2
+      """
+      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
+    def Get(self, request, context):
+      """Retrieve a snapshot of data from the target. A Get RPC requests that the
+      target snapshots a subset of the data tree as specified by the paths
+      included in the message and serializes this to be returned to the
+      client using the specified encoding.
+      Reference: gNMI Specification Section 3.3
+      """
+      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
+    def Set(self, request, context):
+      """Set allows the client to modify the state of data on the target. The
+      paths to modified along with the new values that the client wishes
+      to set the value to.
+      Reference: gNMI Specification Section 3.4
+      """
+      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
+    def Subscribe(self, request_iterator, context):
+      """Subscribe allows a client to request the target to send it values
+      of particular paths within the data tree. These values may be streamed
+      at a particular cadence (STREAM), sent one off on a long-lived channel
+      (POLL), or sent as a one-off retrieval (ONCE).
+      Reference: gNMI Specification Section 3.5
+      """
+      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
+
+
+  class BetagNMIStub(object):
+    """The Beta API is deprecated for 0.15.0 and later.
+
+    It is recommended to use the GA API (classes and functions in this
+    file not marked beta) for all further purposes. This class was generated
+    only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
+    # missing associated documentation comment in .proto file
+    pass
+    def Capabilities(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
+      """Capabilities allows the client to retrieve the set of capabilities that
+      is supported by the target. This allows the target to validate the
+      service version that is implemented and retrieve the set of models that
+      the target supports. The models can then be specified in subsequent RPCs
+      to restrict the set of data that is utilized.
+      Reference: gNMI Specification Section 3.2
+      """
+      raise NotImplementedError()
+    Capabilities.future = None
+    def Get(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
+      """Retrieve a snapshot of data from the target. A Get RPC requests that the
+      target snapshots a subset of the data tree as specified by the paths
+      included in the message and serializes this to be returned to the
+      client using the specified encoding.
+      Reference: gNMI Specification Section 3.3
+      """
+      raise NotImplementedError()
+    Get.future = None
+    def Set(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
+      """Set allows the client to modify the state of data on the target. The
+      paths to modified along with the new values that the client wishes
+      to set the value to.
+      Reference: gNMI Specification Section 3.4
+      """
+      raise NotImplementedError()
+    Set.future = None
+    def Subscribe(self, request_iterator, timeout, metadata=None, with_call=False, protocol_options=None):
+      """Subscribe allows a client to request the target to send it values
+      of particular paths within the data tree. These values may be streamed
+      at a particular cadence (STREAM), sent one off on a long-lived channel
+      (POLL), or sent as a one-off retrieval (ONCE).
+      Reference: gNMI Specification Section 3.5
+      """
+      raise NotImplementedError()
+
+
+  def beta_create_gNMI_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
+    """The Beta API is deprecated for 0.15.0 and later.
+
+    It is recommended to use the GA API (classes and functions in this
+    file not marked beta) for all further purposes. This function was
+    generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
+    request_deserializers = {
+      ('gnmi.gNMI', 'Capabilities'): CapabilityRequest.FromString,
+      ('gnmi.gNMI', 'Get'): GetRequest.FromString,
+      ('gnmi.gNMI', 'Set'): SetRequest.FromString,
+      ('gnmi.gNMI', 'Subscribe'): SubscribeRequest.FromString,
+    }
+    response_serializers = {
+      ('gnmi.gNMI', 'Capabilities'): CapabilityResponse.SerializeToString,
+      ('gnmi.gNMI', 'Get'): GetResponse.SerializeToString,
+      ('gnmi.gNMI', 'Set'): SetResponse.SerializeToString,
+      ('gnmi.gNMI', 'Subscribe'): SubscribeResponse.SerializeToString,
+    }
+    method_implementations = {
+      ('gnmi.gNMI', 'Capabilities'): face_utilities.unary_unary_inline(servicer.Capabilities),
+      ('gnmi.gNMI', 'Get'): face_utilities.unary_unary_inline(servicer.Get),
+      ('gnmi.gNMI', 'Set'): face_utilities.unary_unary_inline(servicer.Set),
+      ('gnmi.gNMI', 'Subscribe'): face_utilities.stream_stream_inline(servicer.Subscribe),
+    }
+    server_options = beta_implementations.server_options(request_deserializers=request_deserializers, response_serializers=response_serializers, thread_pool=pool, thread_pool_size=pool_size, default_timeout=default_timeout, maximum_timeout=maximum_timeout)
+    return beta_implementations.server(method_implementations, options=server_options)
+
+
+  def beta_create_gNMI_stub(channel, host=None, metadata_transformer=None, pool=None, pool_size=None):
+    """The Beta API is deprecated for 0.15.0 and later.
+
+    It is recommended to use the GA API (classes and functions in this
+    file not marked beta) for all further purposes. This function was
+    generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
+    request_serializers = {
+      ('gnmi.gNMI', 'Capabilities'): CapabilityRequest.SerializeToString,
+      ('gnmi.gNMI', 'Get'): GetRequest.SerializeToString,
+      ('gnmi.gNMI', 'Set'): SetRequest.SerializeToString,
+      ('gnmi.gNMI', 'Subscribe'): SubscribeRequest.SerializeToString,
+    }
+    response_deserializers = {
+      ('gnmi.gNMI', 'Capabilities'): CapabilityResponse.FromString,
+      ('gnmi.gNMI', 'Get'): GetResponse.FromString,
+      ('gnmi.gNMI', 'Set'): SetResponse.FromString,
+      ('gnmi.gNMI', 'Subscribe'): SubscribeResponse.FromString,
+    }
+    cardinalities = {
+      'Capabilities': cardinality.Cardinality.UNARY_UNARY,
+      'Get': cardinality.Cardinality.UNARY_UNARY,
+      'Set': cardinality.Cardinality.UNARY_UNARY,
+      'Subscribe': cardinality.Cardinality.STREAM_STREAM,
+    }
+    stub_options = beta_implementations.stub_options(host=host, metadata_transformer=metadata_transformer, request_serializers=request_serializers, response_deserializers=response_deserializers, thread_pool=pool, thread_pool_size=pool_size)
+    return beta_implementations.dynamic_stub(channel, 'gnmi.gNMI', cardinalities, options=stub_options)
+except ImportError:
+  pass
 # @@protoc_insertion_point(module_scope)

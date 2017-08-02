@@ -5,7 +5,7 @@ import time
 
 import grpc.framework.interfaces.face
 import gnmi.gnmi_pb2 as gnmi_pb2
-import pyopenconfig.gnmi_pb2
+import pyopenconfig.gnmi_pb2 as openconfig_gnmi
 import pyopenconfig.resources
 
 import atexit
@@ -52,12 +52,12 @@ def processPacket(response):
         for pair in batch.ip: 
             if(pair.src=="10.0.0.1" or pair.dst=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
-        ptg = badcounter/(len(batch.ip))
+        ptg = (100*badcounter)/(len(batch.ip))
         self.processSites(ptg)
         badcounter = 0
 
 def processSites(ptg):
-    if ptg > 0.05: #value very low. 
+    if ptg > 5: #value very low. 
         backToWork()
 
 def backToWork(response):
@@ -132,7 +132,7 @@ def run():
         metadata = [("username", args.username), ("password", args.password)]
 
     channel = grpc.insecure_channel(args.host + ":" + str(args.port))
-    stub = pyopenconfig.gnmi_pb2.gNMIStub(channel)
+    stub = openconfig_gnmi.gNMIStub(channel)
 
     atexit.register(shutdown_hook) 
 

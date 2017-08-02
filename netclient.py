@@ -4,7 +4,8 @@ import sys
 import time
 
 import grpc.framework.interfaces.face
-import pyopenconfig.gnmi_pb2
+import pyopenconfig.gnmi_pb2 as openconfig_gnmi
+import gnmi.gnmi_pb2 as gnmi_pb2
 import pyopenconfig.resources
 
 import atexit
@@ -46,15 +47,15 @@ def processPacket(response): #HAVE TO FIX THIS METHOD TO DEAL WITH AN IPPAIRBATC
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        batch = update.val
+        batch = update.batch_val
         print(batch)
         for pair in batch.ip: 
-            if(pair.src() in badsites or pair.dst() in badsites or pair.src()=="10.0.0.1" or pair.dst()=="10.0.0.1"): #consider hashset
+            if(pair.src() in badsites or pair.dst() in badsites): #consider hashset
                 badcounter=badcounter+1
         
-        if(badcounter/(len(pairs))*100>15):
+        if((badcounter/(len(pairs))*100)>15):
             decision=True
-        elif(badcounter/(len(pairs))*100<=15):
+        elif((badcounter/(len(pairs))*100)<=15):
             decision=False
         requests.post('http://localhost:3000/post', json = { 'decision' : decision })
         badcounter = 0
@@ -132,7 +133,7 @@ def run():
         metadata = [("username", args.username), ("password", args.password)]
 
     channel = grpc.insecure_channel(args.host + ":" + str(args.port))
-    stub = pyopenconfig.gnmi_pb2.gNMIStub(channel)
+    stub = openconfig_gnmi.gNMIStub(channel)
 
     atexit.register(shutdown_hook) 
 

@@ -78,7 +78,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             if pkgdPkt != None: 
                 logger.info("I PULLED SUCCESSFULLY FROM THE QUEUE.")
                 PAIR_LIST.append(pkgdPkt)
-                logger.info("THIS IS THE LENGTH OF PAIRLIST, BRO: " + len(PAIR_LIST))
+                logger.info("THIS IS THE LENGTH OF PAIRLIST, BRO: " + str(len(PAIR_LIST)))
                 if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO
                     logger.info("100 packets bro :D")
                     batch = pkt_pb2.IpPairBatch()

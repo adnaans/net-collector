@@ -26,7 +26,7 @@ app.post('/post', function (req, res) {
   if(req.body['decision']){
     io.emit('backtowork');
   }
-  else if(!req.body['decision']){
+  else if(req.body['decision']==false){
     io.emit('keepworking');
   }
   else{

@@ -1667,21 +1667,23 @@ _SETRESPONSE.fields_by_name['message'].has_options = True
 _SETRESPONSE.fields_by_name['message']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))
 _UPDATERESULT.fields_by_name['timestamp'].has_options = True
 _UPDATERESULT.fields_by_name['timestamp']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))
-
 try:
   # THESE ELEMENTS WILL BE DEPRECATED.
   # Please use the generated *_pb2_grpc.py files instead.
   import grpc
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
   from grpc.beta import implementations as beta_implementations
   from grpc.beta import interfaces as beta_interfaces
+  from grpc.framework.common import cardinality
+  from grpc.framework.interfaces.face import utilities as face_utilities
 
 
   class gNMIStub(object):
+    # missing associated documentation comment in .proto file
+    pass
 
     def __init__(self, channel):
       """Constructor.
+
       Args:
         channel: A grpc.Channel.
       """
@@ -1708,6 +1710,8 @@ try:
 
 
   class gNMIServicer(object):
+    # missing associated documentation comment in .proto file
+    pass
 
     def Capabilities(self, request, context):
       """Capabilities allows the client to retrieve the set of capabilities that
@@ -1784,9 +1788,12 @@ try:
 
   class BetagNMIServicer(object):
     """The Beta API is deprecated for 0.15.0 and later.
+
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This class was generated
     only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
+    # missing associated documentation comment in .proto file
+    pass
     def Capabilities(self, request, context):
       """Capabilities allows the client to retrieve the set of capabilities that
       is supported by the target. This allows the target to validate the
@@ -1823,9 +1830,12 @@ try:
 
   class BetagNMIStub(object):
     """The Beta API is deprecated for 0.15.0 and later.
+
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This class was generated
     only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
+    # missing associated documentation comment in .proto file
+    pass
     def Capabilities(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
       """Capabilities allows the client to retrieve the set of capabilities that
       is supported by the target. This allows the target to validate the
@@ -1865,6 +1875,7 @@ try:
 
   def beta_create_gNMI_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
     """The Beta API is deprecated for 0.15.0 and later.
+
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This function was
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
@@ -1892,6 +1903,7 @@ try:
 
   def beta_create_gNMI_stub(channel, host=None, metadata_transformer=None, pool=None, pool_size=None):
     """The Beta API is deprecated for 0.15.0 and later.
+
     It is recommended to use the GA API (classes and functions in this
     file not marked beta) for all further purposes. This function was
     generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""

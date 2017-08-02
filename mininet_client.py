@@ -4,8 +4,9 @@ import sys
 import time
 
 import grpc.framework.interfaces.face
-import gnmi.gnmi_pb2 as better_gnmi_pb2
-import pyopenconfig.gnmi_pb2 as openconfig_gnmi
+from gnmi import gnmi_pb2 as gnmi_pb2
+
+from pyopenconfig import gnmi_pb2 as openconfig_gnmi
 import pyopenconfig.resources
 
 import atexit

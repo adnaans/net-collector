@@ -44,13 +44,12 @@ def encodePath(path):
     return pathStrs[1:]
 
 def processPacket(response): 
-    logger.debug(response)
-    logger.debug(response.update)
-    logger.debug(response.update.update)
     for update in response.update.update:
         logger.info("The type of this update is : " + str(type(update)))
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
+        value = update.value
+        path = update.path
         batch = update.batch_val
         print(batch)
         for pair in batch.ip: 

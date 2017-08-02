@@ -47,6 +47,7 @@ def encodePath(path):
 def processPacket(response): 
     for update in response.update.update:
         logger.info("The type of this update is : " + str(type(update)))
+        logger.info("THIS IS THE UPDATE: "+ str(update))
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
         logger.info(str(update.ListFields()))
@@ -83,6 +84,7 @@ def subscribe(stub, path_str, mode, metadata):
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
             logger.info("Response registered.")
+            logger.info("THIS IS THE RESPONSE: "+ str(response))
             logger.debug(response)
             processPacket(response)
             i += 500

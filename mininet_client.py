@@ -46,7 +46,7 @@ def processPacket(response):
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        batch = update.batch_val
+        batch = update.val.batch_val
         print(batch)
         for pair in batch.ip: 
             if(pair.src=="10.0.0.1" or pair.dst=="10.0.0.1"): #consider hashset

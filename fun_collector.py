@@ -61,31 +61,23 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         for response in stub.Subscribe(request_iterator):
             if response.update:
                 processingQ.put(self.filterAndPackage(response.update)) 
-                logger.info("from stream thread: the size of the proccessingQ is:" + str(processingQ.qsize()))
             else:
                 pass
 
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
         logger.info("thread to aggregate off collection q called.")
         while True: 
-            logger.info('from processing thread: size of the processingq is :' + str(processingQ.qsize()))
             try: 
                 pkgdPkt = processingQ.get(False) #STUCK HERE
-                logger.info("tried to pull something off the queue.")
             except Queue.Empty:
-                logger.info("pulled nothing off queue.")
                 pkgdPkt = None
             if pkgdPkt != None: 
-                logger.info("I PULLED SUCCESSFULLY FROM THE QUEUE.")
                 PAIR_LIST.append(pkgdPkt)
-                logger.info("THIS IS THE LENGTH OF PAIRLIST, BRO: " + str(len(PAIR_LIST)))
                 if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO
-                    logger.info("100 packets bro :D")
                     for pair in PAIR_LIST:
                         batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST)
                         for q in queues:
                             q.put(batch)
-                            logger.info("SUPER IMPORTANT I PUT SOMETHING IN THE QUEUE!!! BRO")
                     del PAIR_LIST[:]
 
     def Subscribe(self, request_iterator, context):
@@ -117,17 +109,15 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 batch = None
                 try: 
                     batch = q.get(False)
-                    logger.info("trying to get a batch from the subscription queue.")
                 except Queue.Empty:
-                    logger.info("failed batch get")
                     batch = None
                 if batch!=None:
                     update_msg = [gnmi_pb2.Update(batch_val=batch)]
                     tm = int(time.time() * 1000)
                     notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                     response = gnmi_pb2.SubscribeResponse(update=notif)
-                    logger.info(response)
                     logger.info("This is what the collector is trying to send to the client: ")
+                    logger.info(response)
                     yield response
 
         print "Streaming done!"

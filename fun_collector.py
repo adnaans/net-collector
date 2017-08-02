@@ -73,8 +73,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 pkgdPkt = processingQ.get(False) #STUCK HERE
                 logger.info("tried to pull something off the queue.")
             except Queue.Empty:
-                    logger.info("pulled nothing off queue.")
-                    pkgdPkt = None
+                logger.info("pulled nothing off queue.")
+                pkgdPkt = None
             if pkgdPkt != None: 
                 logger.info("I PULLED SUCCESSFULLY FROM THE QUEUE.")
                 PAIR_LIST.append(pkgdPkt)

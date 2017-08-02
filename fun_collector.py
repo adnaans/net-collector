@@ -69,8 +69,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
         logger.info("thread to aggregate off collection q called.")
+        pkgdPt = None
         while True: 
-            pkgdPt = None
             while pkgdPkt == None:
                 logger.info('The size of the processing q is :' + processingQ.qsize())
                 try: 

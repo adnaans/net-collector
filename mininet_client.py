@@ -83,7 +83,7 @@ def subscribe(stub, path_str, mode, metadata):
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
             logger.info("Response registered.")
-            logger.debug(response)
+            logger.info("This response is a: " + str(type(response)))
             processPacket(response)
             i += 500
             nums = i

@@ -114,6 +114,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         processingT.start()
         while True:
             for q in queues:
+                batch = None
                 try: 
                     batch = q.get(False)
                     logger.info("trying to get a batch from the subscription queue.")
@@ -121,8 +122,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                     logger.info("failed batch get")
                     batch = None
                 if batch!=None:
-                    tm = int(time.time() * 1000)
                     update_msg = [gnmi_pb2.Update(batch_val=batch)]
+                    tm = int(time.time() * 1000)
                     notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                     response = gnmi_pb2.SubscribeResponse(update=notif)
                     logger.info("This is what the collector is trying to send to the client: ")

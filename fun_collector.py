@@ -74,7 +74,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 try: 
                     pkgdPkt = processingQ.get() #STUCK HERE
                 except Queue.Empty:
-                    pkgdPkt = None:
+                    pkgdPkt = None
             logger.info("I PULLED SUCCESSFULLY FROM THE QUEUE.")
             PAIR_LIST.append(pkgdPkt)
             logger.info("THIS IS THE LENGTH OF PAIRLIST, BRO: " + len(PAIR_LIST))

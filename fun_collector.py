@@ -75,6 +75,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 logger.info('The size of the processing q is :' + processingQ.qsize())
                 try: 
                     pkgdPkt = processingQ.get(False) #STUCK HERE
+                    logger.info("tried to pull something off the queue.")
                 except Queue.Empty:
                     logger.info("pulled nothing off queue.")
                     pkgdPkt = None

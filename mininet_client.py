@@ -6,7 +6,6 @@ import time
 import grpc.framework.interfaces.face
 
 from gnmi import gnmi_pb2 as gnmi_pb2
-from pyopenconfig import gnmi_pb2 as openconfig_gnmi
 
 import pyopenconfig.resources
 
@@ -80,7 +79,7 @@ def subscribe(stub, path_str, mode, metadata):
     global nums
     """Subscribe and echo the stream"""
     logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
-    subscribe_request1 = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
+    subscribe_request = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
     i = 500
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):

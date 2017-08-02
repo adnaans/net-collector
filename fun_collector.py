@@ -71,6 +71,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         logger.info("thread to aggregate off collection q called.")
         while True: 
             while pkgdPkt == None:
+                logger.info('The size of the processing q is :' processingQ.qize())
                 try: 
                     pkgdPkt = processingQ.get(False) #STUCK HERE
                 except Queue.Empty:

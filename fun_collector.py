@@ -7,6 +7,8 @@ import gnmi.gnmi_pb2 as gnmi_pb2
 
 import gnmi.pkt_pb2 as pkt_pb2
 
+from pyopenconfig.any_pb2 as any_pb2
+
 from pathtree.pathtree import Branch as Branch 
 from pathtree.pathtree import Path
 import grpc
@@ -53,8 +55,10 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
     def filterAndPackage(self, notif):
         updates = notif.update
         for u in updates: #updates should always be len 1-- something to handle l8r bro
-            src = u.pkt_val.i.src
-            dst = u.pkt_val.i.dst
+            packet =pkt_pb2.Packet()
+            u.val.any_val.Unpack(packet)
+            src = packet.i.src
+            dst = packet.i.dst
             fixedUpdate = pkt_pb2.IpPair(src=src, dest=dst)
             return fixedUpdate
 
@@ -117,7 +121,10 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 except Queue.Empty:
                     batch = None
                 if batch!=None:
-                    update_msg = [gnmi_pb2.Update(batch_val=batch)]
+                    any_msg = any_pb2.Any()
+                    any_msg.Pack(batch)
+                    t = gnmi_pb2.TypedValue(any_val=any_msg)
+                    update_msg = [gnmi_pb2.Update(typedval=t)]
                     tm = int(time.time() * 1000)
                     notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                     response = gnmi_pb2.SubscribeResponse(update=notif)

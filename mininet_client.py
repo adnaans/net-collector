@@ -5,8 +5,8 @@ import time
 
 import grpc.framework.interfaces.face
 
-import pyopenconfig.gnmi_pb2_v2 as openconfig_gnmi
-import gnmi.gnmi_pb2 as gnmi_pb2
+import pyopenconfig.gnmi_pb2 as gnmi_pb2
+import gnmi.pkt_pb2 as pkt_pb2
 
 import pyopenconfig.resources
 
@@ -52,7 +52,8 @@ def processPacket(response):
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
         logger.info(str(update.ListFields()))
-        batch = update.batch_val
+        batch = pkt_pb2.IpPairBatch()
+        update.val.any_val.Unpack(batch)
         print(batch)
         for pair in batch.ip: 
             if(pair.src=="10.0.0.1" or pair.dst=="10.0.0.1"): #consider hashset

@@ -275,22 +275,8 @@ _UPDATE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))),
     _descriptor.FieldDescriptor(
-      name='typedval', full_name='gnmi.Update.typedval', index=2,
+      name='val', full_name='gnmi.Update.val', index=2,
       number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='pkt_val', full_name='gnmi.Update.pkt_val', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='batch_val', full_name='gnmi.Update.batch_val', index=4,
-      number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -306,12 +292,9 @@ _UPDATE = _descriptor.Descriptor(
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
-    _descriptor.OneofDescriptor(
-      name='val', full_name='gnmi.Update.val',
-      index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=198,
-  serialized_end=372,
+  serialized_start=218,
+  serialized_end=315,
 )
 
 
@@ -1431,21 +1414,10 @@ _NOTIFICATION.fields_by_name['update'].message_type = _UPDATE
 _NOTIFICATION.fields_by_name['delete'].message_type = _PATH
 _UPDATE.fields_by_name['path'].message_type = _PATH
 _UPDATE.fields_by_name['value'].message_type = _VALUE
-_UPDATE.fields_by_name['typedval'].message_type = _TYPEDVALUE
-_UPDATE.fields_by_name['pkt_val'].message_type = pkt__pb2._PACKET
-_UPDATE.fields_by_name['batch_val'].message_type = pkt__pb2._IPPAIRBATCH
-_UPDATE.oneofs_by_name['val'].fields.append(
-  _UPDATE.fields_by_name['typedval'])
-_UPDATE.fields_by_name['typedval'].containing_oneof = _UPDATE.oneofs_by_name['val']
-_UPDATE.oneofs_by_name['val'].fields.append(
-  _UPDATE.fields_by_name['pkt_val'])
-_UPDATE.fields_by_name['pkt_val'].containing_oneof = _UPDATE.oneofs_by_name['val']
-_UPDATE.oneofs_by_name['val'].fields.append(
-  _UPDATE.fields_by_name['batch_val'])
-_UPDATE.fields_by_name['batch_val'].containing_oneof = _UPDATE.oneofs_by_name['val']
+_UPDATE.fields_by_name['val'].message_type = _TYPEDVALUE
 _TYPEDVALUE.fields_by_name['decimal_val'].message_type = _DECIMAL64
 _TYPEDVALUE.fields_by_name['leaflist_val'].message_type = _SCALARARRAY
-_TYPEDVALUE.fields_by_name['any_val'].message_type = any__pb2._ANY
+_TYPEDVALUE.fields_by_name['any_val'].message_type = google_dot_protobuf_dot_any__pb2._ANY
 _TYPEDVALUE.oneofs_by_name['value'].fields.append(
   _TYPEDVALUE.fields_by_name['string_val'])
 _TYPEDVALUE.fields_by_name['string_val'].containing_oneof = _TYPEDVALUE.oneofs_by_name['value']
@@ -1482,8 +1454,11 @@ _TYPEDVALUE.fields_by_name['json_ietf_val'].containing_oneof = _TYPEDVALUE.oneof
 _TYPEDVALUE.oneofs_by_name['value'].fields.append(
   _TYPEDVALUE.fields_by_name['ascii_val'])
 _TYPEDVALUE.fields_by_name['ascii_val'].containing_oneof = _TYPEDVALUE.oneofs_by_name['value']
+_PATH.fields_by_name['elem'].message_type = _PATHELEM
+_PATHELEM_KEYENTRY.containing_type = _PATHELEM
+_PATHELEM.fields_by_name['key'].message_type = _PATHELEM_KEYENTRY
 _VALUE.fields_by_name['type'].enum_type = _ENCODING
-_ERROR.fields_by_name['data'].message_type = any__pb2._ANY
+_ERROR.fields_by_name['data'].message_type = google_dot_protobuf_dot_any__pb2._ANY
 _SCALARARRAY.fields_by_name['element'].message_type = _TYPEDVALUE
 _SUBSCRIBEREQUEST.fields_by_name['subscribe'].message_type = _SUBSCRIPTIONLIST
 _SUBSCRIBEREQUEST.fields_by_name['poll'].message_type = _POLL
@@ -1544,6 +1519,7 @@ DESCRIPTOR.message_types_by_name['Notification'] = _NOTIFICATION
 DESCRIPTOR.message_types_by_name['Update'] = _UPDATE
 DESCRIPTOR.message_types_by_name['TypedValue'] = _TYPEDVALUE
 DESCRIPTOR.message_types_by_name['Path'] = _PATH
+DESCRIPTOR.message_types_by_name['PathElem'] = _PATHELEM
 DESCRIPTOR.message_types_by_name['Value'] = _VALUE
 DESCRIPTOR.message_types_by_name['Error'] = _ERROR
 DESCRIPTOR.message_types_by_name['Decimal64'] = _DECIMAL64
@@ -1567,7 +1543,6 @@ DESCRIPTOR.message_types_by_name['ModelData'] = _MODELDATA
 DESCRIPTOR.enum_types_by_name['Encoding'] = _ENCODING
 DESCRIPTOR.enum_types_by_name['SubscriptionMode'] = _SUBSCRIPTIONMODE
 DESCRIPTOR.extensions_by_name['gnmi_service'] = gnmi_service
-#_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Notification = _reflection.GeneratedProtocolMessageType('Notification', (_message.Message,), dict(
   DESCRIPTOR = _NOTIFICATION,

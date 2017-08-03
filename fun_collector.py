@@ -23,13 +23,14 @@ import copy
 
 from scapy.all import *
 
+import pyopenconfig.resources
+
 queues = []
 processingQ = Queue.Queue()
 
 # - logging configuration
 logging.basicConfig()
 logger = logging.getLogger('collector')
-
 logger.setLevel(logging.DEBUG)
 
 
@@ -170,11 +171,14 @@ def serve():
     #start streaming
     stubs = [stub1, stub2]
     threads = []
+    #dummy request to satisfy arguments: 
+    path_str = "interfaces/ethnet/state"
+    subscribe_request = pyopenconfig.resources.make_get_request(path_str)
     for stub in stubs:
-        t = threading.Thread(target=self.stream, args=(stub, iters[stubs.index(stub)])) #iters[stubs.index(stub)]
+        t = threading.Thread(target=CollectorServicer.stream, args=(stub, subscribe_request)
         threads.append(t) #is this even needed bro
         t.start()
-    processingT = threading.Thread(target=self.processThatQ)
+    processingT = threading.Thread(target=CollectorServicer.processThatQ)
     threads.append(processingT)
     processingT.start()
 

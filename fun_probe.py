@@ -72,6 +72,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
         any_msg = any_pb2.Any()
         any_msg.Pack(gnmiPacket)
+        print("The type of any_msg is: " +str(type(any_msg)))
         typedVal = gnmi_pb2.TypedValue(any_val=any_msg)
         update = gnmi_pb2.Update(path=path, val=typedVal)
         return update

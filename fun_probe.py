@@ -74,7 +74,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         print("The type of any_msg w/o packing is:" + str(type(any_msg)))
         any_msg.Pack(gnmiPacket)
         print("The type of any_msg is: " +str(type(any_msg)))
-        print("The url of any_msg is : " +str(type(any_msg.type_url)))
+        print("The url of any_msg is : " +str(any_msg.type_url))
         typedVal = gnmi_pb2.TypedValue(any_val=any_msg)
         update = gnmi_pb2.Update(path=path, val=typedVal)
         return update

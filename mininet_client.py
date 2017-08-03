@@ -47,8 +47,6 @@ def encodePath(path):
 
 def processPacket(response): 
     for update in response.update.update:
-        logger.info("The type of this update is : " + str(type(update)))
-        logger.info(update)
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
         logger.info(str(update.ListFields()))
@@ -57,6 +55,8 @@ def processPacket(response):
         print(batch)
         badcounter = 0
         for pair in batch.ip: 
+            logger.info("The string source is: " + str(pair.src))
+            logger.info("The string dest is : " + str(pair.dest))
             if(pair.src=="10.0.0.1" or pair.dest=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
@@ -93,9 +93,6 @@ def subscribe(stub, path_str, mode, metadata):
     i = 500
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
-            logger.info("Response registered.")
-            logger.debug(response)
-            logger.info(response)
             processPacket(response)
             i += 500
             nums = i

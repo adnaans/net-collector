@@ -56,7 +56,7 @@ def processPacket(response):
         update.val.any_val.Unpack(batch)
         print(batch)
         for pair in batch.ip: 
-            if(pair.src=="10.0.0.1" or pair.dst=="10.0.0.1"): #consider hashset
+            if(pair.src=="10.0.0.1" or pair.dest=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
         self.processSites(ptg)

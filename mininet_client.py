@@ -59,10 +59,10 @@ def processPacket(response):
                 badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
         if(ptg>15):
-            logger.info("DECISION: Back to work!")
+            print("DECISION: Back to work!")
             decision=True
         elif(ptg<=15):
-            logger.info("DECISION: Keep working...")
+            print("DECISION: Keep working...")
             decision=False
         requests.post('http://localhost:3000/post', json = { 'decision' : decision })
         badcounter = 0
@@ -71,14 +71,8 @@ def processPacket(response):
 #     if ptg > 5: #value very low. 
 #         backToWork()
 
-<<<<<<< HEAD
 # def backToWork(response):
 #     print "All days are good days, even when they're bad days."
-=======
-def backToWork():
-    print "All days are good days, even when they're bad days."
->>>>>>> 177dc473917454cfa49b7d3208e91a581874e831
-
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""

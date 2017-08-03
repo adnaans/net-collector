@@ -45,7 +45,7 @@ def encodePath(path):
         pathStrs = pathStrs + "." + pstr
     return pathStrs[1:]
 
-def processPacket(response): 
+def processPacket(self, response): 
     for update in response.update.update:
         logger.info("The type of this update is : " + str(type(update)))
         logger.info(update)

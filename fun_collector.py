@@ -32,15 +32,6 @@ logger = logging.getLogger('collector')
 
 logger.setLevel(logging.DEBUG)
 
-#configure southbound device address
-device1_ip = "" #h1.IP()
-device1_port = ""
-
-device2_ip = "" #h2.IP()
-device2_port = ""
-
-host_ip = ""
-host_port = ""
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -63,7 +54,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             return fixedUpdate
 
     def stream(self, stub, request_iterator):  
-        for response in stub.Subscribe(request_iterator):
+        for response in stub.Subscribe(request_iterator): #ignore also in probe...\
             if response.update:
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:
@@ -78,7 +69,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 pkgdPkt = None
             if pkgdPkt != None: 
                 PAIR_LIST.append(pkgdPkt)
-                if (len(PAIR_LIST)>=100): #if the number of saved IpPair messages is 100 <<--- this is where the problem is! BRO
+                if (len(PAIR_LIST)>=100): 
                     for pair in PAIR_LIST:
                         batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST)
                         for q in queues:
@@ -86,35 +77,11 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                     del PAIR_LIST[:]
 
     def Subscribe(self, request_iterator, context):
-        logger.info("Collector has received a subscribe request.")
-        #create a channel connecting to the southbound device
-        logger.info("Connecting to: " + device1_ip + " : " + device1_port)
-        logger.info("Connecting to: " + device2_ip + " : " + device2_port)
-        channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
-        stub1 = gnmi_pb2_grpc.gNMIStub(channel1)
-
-        channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
-        stub2 = gnmi_pb2_grpc.gNMIStub(channel2)
-
         q = Queue.Queue()
         queues.append(q)
 
-        iter1 = request_iterator
-        iter2 = copy.deepcopy(iter1) #this failed, horribly :(
-
-        #start streaming
-        stubs = [stub1, stub2]
-        iters = [iter1, iter2]
-        threads = []
-        for stub in stubs:
-            t = threading.Thread(target=self.stream, args=(stub, iters[stubs.index(stub)])) #iters[stubs.index(stub)]
-            threads.append(t) #is this even needed bro
-            t.start()
-        processingT = threading.Thread(target=self.processThatQ)
-        threads.append(processingT)
-        processingT.start()
         while True:
-            for q in queues:
+            for q in queues: #no
                 batch = None
                 try: 
                     batch = q.get(False)
@@ -144,15 +111,15 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
            #pathStrs = self.encodePath(path.elem)
            #self.ptree.add(pathStrs, tm, val.ip)
 
-    def encodePath(self, path):
-        pathStrs = []
-        for pe in path:
-            pstr = pe.name
-            if pe.key:
-                for k, v in pe.key.iteritems():
-                    pstr += "[" + str(k) + "=" + str(v) + "]"
-            pathStrs.append(pstr)
-        return pathStrs
+    #def encodePath(self, path):
+        #pathStrs = []
+        #for pe in path:
+            #pstr = pe.name
+            #if pe.key:
+                #for k, v in pe.key.iteritems():
+                    #pstr += "[" + str(k) + "=" + str(v) + "]"
+            #pathStrs.append(pstr)
+        #return pathStrs
 
 
 def serve():
@@ -168,35 +135,16 @@ def serve():
     parser.add_argument('--d1port', default='', help='port for device 1')
     parser.add_argument('--d2port', default='', help='port for device 2')
 
-    #parser.add_argument('--sample', type=int, default=1,
-    #                   help='how many messages to be aggregated')
     parser.add_argument('--debug', type=str, default='on', help='debug level')
     args = parser.parse_args()
 
-    #global interval
-    #interval = args.sample
-
-    global device1_ip
-    global device2_ip
-    global device1_port
-    global device2_port
-    global host_ip
-    global host_port
 
     host_ip = args.host
     host_port = args.port
-
     device1_ip = args.d1host
     device2_ip = args.d2host
-
     device1_port = args.d1port
     device2_port = args.d2port
-
-    logger.info(device1_ip)
-    logger.info(device2_ip)
-    logger.info(device1_port)
-    logger.info(device2_port)
-    
 
     if args.debug == "off":
         logger.setLevel(logging.INFO)
@@ -206,11 +154,30 @@ def serve():
         CollectorServicer(), server)
     server.add_insecure_port(args.host + ":" + str(args.port))
     server.start()
+
     logger.info("Collector Server Started.....")
-    #CONSTRUCT QUEUE FOR PROBE TO PROCESSING
-    #KICK OFF CLIENT LISTENING (SENDING PKTS TO PROCESSING QUEUE) [1 THREAD PER CLIENT]
-    #KICK OFF THREAD CONSUMING PROCESSING QUEUE
-    #LIST OF SUBSCRIBER QUEUES
+    
+    #open connection to probes
+    logger.info("Connecting to: " + device1_ip + " : " + device1_port)
+    logger.info("Connecting to: " + device2_ip + " : " + device2_port)
+    
+    channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
+    stub1 = gnmi_pb2_grpc.gNMIStub(channel1)
+
+    channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
+    stub2 = gnmi_pb2_grpc.gNMIStub(channel2)
+
+    #start streaming
+    stubs = [stub1, stub2]
+    threads = []
+    for stub in stubs:
+        t = threading.Thread(target=self.stream, args=(stub, iters[stubs.index(stub)])) #iters[stubs.index(stub)]
+        threads.append(t) #is this even needed bro
+        t.start()
+    processingT = threading.Thread(target=self.processThatQ)
+    threads.append(processingT)
+    processingT.start()
+
     try:
        while True:
           time.sleep(_ONE_DAY_IN_SECONDS)

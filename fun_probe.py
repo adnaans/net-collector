@@ -92,11 +92,6 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
             tm = int(time.time() * 1000)
             notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
             yield gnmi_pb2.SubscribeResponse(update=notif)
-            if mode == 0:
-                continue
-            else:
-                break
-                print "waiting for new request"
         print "Streaming done: close channel"
 
 def serve():

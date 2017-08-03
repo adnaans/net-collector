@@ -124,7 +124,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                     any_msg = any_pb2.Any()
                     any_msg.Pack(batch)
                     t = gnmi_pb2.TypedValue(any_val=any_msg)
-                    update_msg = [gnmi_pb2.Update(typedval=t)]
+                    update_msg = [gnmi_pb2.Update(val=t)]
                     tm = int(time.time() * 1000)
                     notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                     response = gnmi_pb2.SubscribeResponse(update=notif)

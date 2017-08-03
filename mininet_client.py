@@ -140,7 +140,7 @@ def run():
         metadata = [("username", args.username), ("password", args.password)]
 
     channel = grpc.insecure_channel(args.host + ":" + str(args.port))
-    stub = openconfig_gnmi.gNMIStub(channel)
+    stub = gnmi_pb2.gNMIStub(channel)
 
     atexit.register(shutdown_hook) 
 

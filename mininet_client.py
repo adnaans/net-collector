@@ -55,12 +55,12 @@ def processPacket(response):
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
         print(batch)
+        badcounter = 0
         for pair in batch.ip: 
             if(pair.src=="10.0.0.1" or pair.dest=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
         self.processSites(ptg)
-        badcounter = 0
 
 def processSites(ptg):
     if ptg > 5: #value very low. 

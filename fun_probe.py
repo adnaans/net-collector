@@ -41,7 +41,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
     def createStreams():
         pass
 
-    def getPacketData(self, path):
+    def getPacketData(self):
         packet = scapy.sniff(count=1)[0]
         if packet:
           logger.info("A packet has been collected...")
@@ -76,7 +76,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         print("The type of any_msg is: " +str(type(any_msg)))
         print("The url of any_msg is : " +str(any_msg.type_url))
         typedVal = gnmi_pb2.TypedValue(any_val=any_msg)
-        update = gnmi_pb2.Update(path=path, val=typedVal)
+        update = gnmi_pb2.Update(val=typedVal)
         return update
 
     def Subscribe(self, request_iterator, context): 
@@ -88,7 +88,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         while(1):
             update_msg = []
             #for sub in sublist:
-            update_msg.append(self.getPacketData(sub.path))
+            update_msg.append(self.getPacketData())
             tm = int(time.time() * 1000)
             notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
             yield gnmi_pb2.SubscribeResponse(update=notif)

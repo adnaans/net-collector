@@ -66,7 +66,7 @@ def processSites(ptg):
     if ptg > 5: #value very low. 
         backToWork()
 
-def backToWork(response):
+def backToWork():
     print "All days are good days, even when they're bad days."
 
 

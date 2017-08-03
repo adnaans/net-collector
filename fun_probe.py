@@ -79,16 +79,16 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         update = gnmi_pb2.Update(path=path, val=typedVal)
         return update
 
-    def Subscribe(self, request_iterator, context): #not 100% sure what is happening here. 
+    def Subscribe(self, request_iterator, context): 
         logger.info("Probe has received a subscribe request.")
         tag = 0
-        for request in request_iterator:
-            sublist = request.subscribe.subscription
-            mode = request.subscribe.mode    
-            while(1):
-                update_msg = []
-                for sub in sublist:
-                    update_msg.append(self.getPacketData(sub.path))
+        #for request in request_iterator: #IGNORED!
+        sublist = request.subscribe.subscription
+        mode = request.subscribe.mode    
+        while(1):
+            update_msg = []
+            for sub in sublist:
+                update_msg.append(self.getPacketData(sub.path))
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                 yield gnmi_pb2.SubscribeResponse(update=notif)

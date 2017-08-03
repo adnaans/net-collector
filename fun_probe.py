@@ -7,7 +7,7 @@ import grpc
 import gnmi.gnmi_pb2 as gnmi_pb2
 import gnmi.gnmi_pb2_grpc as gnmi_pb2_grpc
 import gnmi.pkt_pb2 as pkt_pb2
-from pyopenconfig.any_pb2 as any_pb2
+import pyopenconfig.any_pb2 as any_pb2
 
 from concurrent import futures
 import time
@@ -71,7 +71,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
             raw = None
         gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
         any_msg = any_pb2.Any()
-        any_msg.pack(gnmiPacket)
+        any_msg.Pack(gnmiPacket)
         typedVal = gnmi_pb2.TypedValue(any_val=any_msg)
         update = gnmi_pb2.Update(path=path, val=typedVal)
         return update

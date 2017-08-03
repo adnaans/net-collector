@@ -5,6 +5,7 @@ import time
 
 import grpc.framework.interfaces.face
 
+from pyopenconfig import gnmi_pb2_v2 as openconfig_gnmi
 from gnmi import gnmi_pb2 as gnmi_pb2
 
 import pyopenconfig.resources
@@ -80,6 +81,7 @@ def subscribe(stub, path_str, mode, metadata):
     """Subscribe and echo the stream"""
     logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
     subscribe_request = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
+    #iterator issue
     i = 500
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
@@ -137,7 +139,7 @@ def run():
         metadata = [("username", args.username), ("password", args.password)]
 
     channel = grpc.insecure_channel(args.host + ":" + str(args.port))
-    stub = gnmi_pb2.gNMIStub(channel)
+    stub = openconfig_gnmi.gNMIStub(channel)
 
     atexit.register(shutdown_hook) 
 

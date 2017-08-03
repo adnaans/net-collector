@@ -15,9 +15,8 @@
 //
 syntax = "proto3";
 
-import "descriptor.proto";
-import "any.proto";
-import "pkt.proto";
+import "github.com/golang/protobuf/ptypes/any/any.proto";
+import "github.com/google/protobuf/src/google/protobuf/descriptor.proto";
 
 // Package gNMI defines a service specification for the gRPC Network Management
 // Interface. This interface is defined to be a standard interface via which
@@ -90,12 +89,7 @@ message Notification {
 message Update {
   Path path = 1;                      // The path (key) for the update.
   Value value = 2 [deprecated=true];  // The value (value) for the update.
-  oneof val {
-    TypedValue typedval = 3;                 // The explicitly typed update value.
-  //THIS IS AN ADDITION MADE ... SEE SOMETHING ABOUT THIS LATER
-    Packet pkt_val = 4;
-    IpPairBatch batch_val = 5;
-  }
+  TypedValue val = 3;                 // The explicitly typed update value.
 }
 
 // TypedValue is used to encode a value being sent between the client and

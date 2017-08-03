@@ -49,7 +49,6 @@ def processPacket(response):
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        logger.info(str(update.ListFields()))
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
         print(batch)

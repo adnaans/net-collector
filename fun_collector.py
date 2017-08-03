@@ -23,7 +23,6 @@ import copy
 
 from scapy.all import *
 
-import pyopenconfig.resources
 
 queues = []
 processingQ = Queue.Queue()
@@ -171,11 +170,8 @@ def serve():
     #start streaming
     stubs = [stub1, stub2]
     threads = []
-    #dummy request to satisfy arguments: 
-    path_str = "interfaces/ethnet/state"
-    subscribe_request = pyopenconfig.resources.make_get_request(path_str)
     for stub in stubs:
-        t = threading.Thread(target=CollectorServicer.stream, args=(stub, subscribe_request))
+        t = threading.Thread(target=CollectorServicer.stream, args=(stub, request_iterator=None))
         threads.append(t) #is this even needed bro
         t.start()
     processingT = threading.Thread(target=CollectorServicer.processThatQ)

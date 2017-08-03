@@ -171,10 +171,10 @@ def serve():
     stubs = [stub1, stub2]
     threads = []
     for stub in stubs:
-        t = threading.Thread(target=CollectorServicer.stream, args=(stub, None))
+        t = threading.Thread(target=CollectorServicer().stream, args=(stub, None))
         threads.append(t) #is this even needed bro
         t.start()
-    processingT = threading.Thread(target=CollectorServicer.processThatQ)
+    processingT = threading.Thread(target=CollectorServicer().processThatQ)
     threads.append(processingT)
     processingT.start()
 

@@ -21,7 +21,7 @@
           console.log("backtowork");
           document.getElementById("msg").innerHTML = "GET BACK TO WORK!";
           document.getElementById("bg").style.backgroundColor =	"#FF0000";
-          setInterval(function()
+          setInterval(function() //Flashes the background
             {
                 var bgcolor=window.getComputedStyle(document.getElementById('bg')).getPropertyValue('background-color');
                 console.log(bgcolor);

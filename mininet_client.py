@@ -60,14 +60,21 @@ def processPacket(response):
             if(pair.src=="10.0.0.1" or pair.dest=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
-        processSites(ptg)
+        if(ptg>15):
+            logger.info("DECISION: Back to work!")
+            decision=True
+        elif(ptg<=15):
+            logger.info("DECISION: Keep working...")
+            decision=False
+        requests.post('http://localhost:3000/post', json = { 'decision' : decision })
+        badcounter = 0
 
-def processSites(ptg):
-    if ptg > 5: #value very low. 
-        backToWork()
+# def processSites(ptg):
+#     if ptg > 5: #value very low. 
+#         backToWork()
 
-def backToWork(response):
-    print "All days are good days, even when they're bad days."
+# def backToWork(response):
+#     print "All days are good days, even when they're bad days."
 
 
 def get(stub, path_str, metadata):

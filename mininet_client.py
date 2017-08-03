@@ -89,7 +89,7 @@ def subscribe(stub, path_str, mode, metadata):
             logger.info("Response registered.")
             logger.debug(response)
             logger.info(response)
-            processPacket(response)
+            self.processPacket(response)
             i += 500
             nums = i
     except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception

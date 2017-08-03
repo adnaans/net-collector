@@ -45,7 +45,7 @@ def encodePath(path):
         pathStrs = pathStrs + "." + pstr
     return pathStrs[1:]
 
-def processPacket(self, response): 
+def processPacket(response): 
     for update in response.update.update:
         logger.info("The type of this update is : " + str(type(update)))
         logger.info(update)
@@ -60,7 +60,7 @@ def processPacket(self, response):
             if(pair.src=="10.0.0.1" or pair.dest=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
-        self.processSites(ptg)
+        processSites(ptg)
 
 def processSites(ptg):
     if ptg > 5: #value very low. 
@@ -89,7 +89,7 @@ def subscribe(stub, path_str, mode, metadata):
             logger.info("Response registered.")
             logger.debug(response)
             logger.info(response)
-            self.processPacket(response)
+            processPacket(response)
             i += 500
             nums = i
     except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception

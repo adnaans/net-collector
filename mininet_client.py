@@ -55,8 +55,6 @@ def processPacket(response):
         print(batch)
         badcounter = 0
         for pair in batch.ip: 
-            logger.info("The string source is: " + str(pair.src))
-            logger.info("The string dest is : " + str(pair.dest))
             if(pair.src=="10.0.0.1" or pair.dest=="10.0.0.1"): #consider hashset
                 badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
@@ -73,8 +71,13 @@ def processPacket(response):
 #     if ptg > 5: #value very low. 
 #         backToWork()
 
+<<<<<<< HEAD
 # def backToWork(response):
 #     print "All days are good days, even when they're bad days."
+=======
+def backToWork():
+    print "All days are good days, even when they're bad days."
+>>>>>>> 177dc473917454cfa49b7d3208e91a581874e831
 
 
 def get(stub, path_str, metadata):

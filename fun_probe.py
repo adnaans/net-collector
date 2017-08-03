@@ -7,7 +7,7 @@ import grpc
 import gnmi.gnmi_pb2 as gnmi_pb2
 import gnmi.gnmi_pb2_grpc as gnmi_pb2_grpc
 import gnmi.pkt_pb2 as pkt_pb2
-import gnmi.any_pb2 as any_pb2
+from google.protobuf import any_pb2
 
 from concurrent import futures
 import time

@@ -7,7 +7,7 @@ import gnmi.gnmi_pb2 as gnmi_pb2
 
 import gnmi.pkt_pb2 as pkt_pb2
 
-import gnmi.any_pb2 as any_pb2
+from google.protobuf import any_pb2 
 
 from pathtree.pathtree import Branch as Branch 
 from pathtree.pathtree import Path

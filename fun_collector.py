@@ -175,7 +175,7 @@ def serve():
     path_str = "interfaces/ethnet/state"
     subscribe_request = pyopenconfig.resources.make_get_request(path_str)
     for stub in stubs:
-        t = threading.Thread(target=CollectorServicer.stream, args=(stub, subscribe_request)
+        t = threading.Thread(target=CollectorServicer.stream, args=(stub, subscribe_request))
         threads.append(t) #is this even needed bro
         t.start()
     processingT = threading.Thread(target=CollectorServicer.processThatQ)

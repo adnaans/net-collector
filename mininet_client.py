@@ -64,7 +64,6 @@ def processPacket(response):
             print("DECISION: Keep working...")
             decision=False
         #requests.post('http://localhost:3000/post', json = { 'decision' : decision })
-        badcounter = 0
 
 # def processSites(ptg):
 #     if ptg > 5: #value very low. 

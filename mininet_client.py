@@ -27,12 +27,6 @@ host_port = 9033
 mode = "stream"
 nums = 0
 
-#db_host = 'localhost'
-#db_port = 4242
-#metrics = potsdb.Client(db_host, port=db_port)
-
-counter = 0
-
 badsites= {"facebook.com", "www.twitter.com", "www.reddit.com"} 
 
 def encodePath(path):
@@ -64,13 +58,6 @@ def processPacket(response):
             print("DECISION: Keep working...")
             decision=False
         #requests.post('http://localhost:3000/post', json = { 'decision' : decision })
-
-# def processSites(ptg):
-#     if ptg > 5: #value very low. 
-#         backToWork()
-
-# def backToWork(response):
-#     print "All days are good days, even when they're bad days."
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""

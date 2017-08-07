@@ -13,6 +13,8 @@ import pyopenconfig.resources
 import atexit
 from scapy.all import *
 
+import socket
+
 import requests
 
 # - logging configuration
@@ -51,19 +53,40 @@ def processPacket(response):
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
-        print(batch)
+        #print(batch)
         badcounter = 0
         for pair in batch.ip: 
-            if(pair.src=="10.0.0.1" or pair.dest=="10.0.0.1"): #consider hashset
+            try:
+                sorc = socket.gethostbyaddr(pair.src)
+                print(sorc)
+                break
+            except socket.herror:
+                print("No src found")
+            except socket.error:
+                print("Socket error")
+            try:
+                dest = socket.gethostbyaddr(pair.src)
+                print(dest)
+                break
+            except socket.herror:
+                print("No dest found")
+            except socket.herror:
+                print("Socket error")
+            #sorc = socket.gethostbyaddr(pair.src)
+            #desti = socket.gethostbyaddr(pair.dest)
+            #print(sorc)
+            #print(desti)
+            if(pair.src=="8.8.8.8" or pair.src=="8.8.4.4" or pair.dest=="8.8.8.8" or pair.src=="8.8.4.4"): #consider hashset
                 badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
-        if(ptg>15):
+        #print(ptg)
+        if(ptg>1):
             print("DECISION: Back to work!")
             decision=True
-        elif(ptg<=15):
+        elif(ptg<=1):
             print("DECISION: Keep working...")
             decision=False
-        #requests.post('http://localhost:3000/post', json = { 'decision' : decision })
+        requests.post('http://localhost:3000/post', json = { 'decision' : decision })
         badcounter = 0
 
 # def processSites(ptg):

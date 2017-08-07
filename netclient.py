@@ -29,7 +29,7 @@ host_port = 9033
 mode = "stream"
 nums = 0
 
-badsites= {"facebook.com", "www.twitter.com", "www.reddit.com"} 
+badsite_keywords= {"facebook", "twitter", "reddit"} 
 
 def encodePath(path):
     pathStrs = "" 

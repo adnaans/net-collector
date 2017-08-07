@@ -50,28 +50,19 @@ def processPacket(response):
         #print(batch)
         badcounter = 0
         for pair in batch.ip: 
-            try:
-                sorc = socket.gethostbyaddr(pair.src)
-                print(sorc)
-                break
-            except socket.herror:
-                print("No src found")
-            except socket.error:
-                print("Socket error")
-            try:
-                dest = socket.gethostbyaddr(pair.src)
-                print(dest)
-                break
-            except socket.herror:
-                print("No dest found")
-            except socket.herror:
-                print("Socket error")
-            #sorc = socket.gethostbyaddr(pair.src)
-            #desti = socket.gethostbyaddr(pair.dest)
-            #print(sorc)
-            #print(desti)
-            if(pair.src=="8.8.8.8" or pair.src=="8.8.4.4" or pair.dest=="8.8.8.8" or pair.src=="8.8.4.4"): #consider hashset
-                badcounter=badcounter+1
+            src = pair.src
+            dst = pair.dest
+            try: 
+                srchost = socket.getfqdn(src)
+            except Exception as e: #catch any exceptions, not keyboard interrupts though... maybe not needed
+                srchost = ""
+            try: 
+                dsthost = socket.getfqdn(dst)
+            except Exception as e: #catch any exceptions, not keyboard interrupts though... maybe not needed
+                dsthost = ""
+            for bad_keyword in badsite_keywords:
+                if (bad_keyword in srchost or bad_keyword in dst_host)
+                    badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
         #print(ptg)
         if(ptg>1):

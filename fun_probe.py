@@ -82,7 +82,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
     def Subscribe(self, request_iterator, context): 
         logger.info("Probe has received a subscribe request.")
         tag = 0
-        #for request in request_iterator: #IGNORED!
+        #for request in request_iterator: #IGNORED
         #sublist = request.subscribe.subscription
         #mode = request.subscribe.mode    
         while(1):

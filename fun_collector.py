@@ -45,7 +45,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def filterAndPackage(self, notif):
         updates = notif.update
-        for u in updates: #updates should always be len 1-- something to handle l8r bro
+        for u in updates: 
             packet =pkt_pb2.Packet()
             u.val.any_val.Unpack(packet)
             src = packet.i.src
@@ -54,13 +54,13 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             return fixedUpdate
 
     def stream(self, stub, request_iterator):  
-        for response in stub.Subscribe(request_iterator): #ignore also in probe...\
+        for response in stub.Subscribe(request_iterator): 
             if response.update:
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:
                 pass
 
-    def processThatQ(self): #STILL NEED TO FIGURE OUT PATHTREE STUFF
+    def processThatQ(self): 
         logger.info("thread to aggregate off collection q called.")
         while True: 
             try: 
@@ -81,23 +81,23 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         queues.append(q)
 
         while True:
-            for q in queues: #no
+            #for q in queues: 
+            batch = None
+            try: 
+                batch = q.get(False)
+            except Queue.Empty:
                 batch = None
-                try: 
-                    batch = q.get(False)
-                except Queue.Empty:
-                    batch = None
-                if batch!=None:
-                    any_msg = any_pb2.Any()
-                    any_msg.Pack(batch)
-                    t = gnmi_pb2.TypedValue(any_val=any_msg)
-                    update_msg = [gnmi_pb2.Update(val=t)]
-                    tm = int(time.time() * 1000)
-                    notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
-                    response = gnmi_pb2.SubscribeResponse(update=notif)
-                    logger.info("This is what the collector is trying to send to the client: ")
-                    logger.info(response)
-                    yield response
+            if batch!=None:
+                any_msg = any_pb2.Any()
+                any_msg.Pack(batch)
+                t = gnmi_pb2.TypedValue(any_val=any_msg)
+                update_msg = [gnmi_pb2.Update(val=t)]
+                tm = int(time.time() * 1000)
+                notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
+                response = gnmi_pb2.SubscribeResponse(update=notif)
+                logger.info("This is what the collector is trying to send to the client: ")
+                logger.info(response)
+                yield response
 
         print "Streaming done!"
     
@@ -170,9 +170,9 @@ def serve():
     #start streaming
     stubs = [stub1, stub2]
     threads = []
-    for stub in stubs:
+    for stub in stubs: #sends dummy iter to probe.
         t = threading.Thread(target=CollectorServicer().stream, args=(stub, iter([])))
-        threads.append(t) #is this even needed bro
+        threads.append(t)
         t.start()
     processingT = threading.Thread(target=CollectorServicer().processThatQ)
     threads.append(processingT)

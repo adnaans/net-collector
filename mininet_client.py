@@ -29,12 +29,6 @@ host_port = 9033
 mode = "stream"
 nums = 0
 
-#db_host = 'localhost'
-#db_port = 4242
-#metrics = potsdb.Client(db_host, port=db_port)
-
-counter = 0
-
 badsites= {"facebook.com", "www.twitter.com", "www.reddit.com"} 
 
 def encodePath(path):

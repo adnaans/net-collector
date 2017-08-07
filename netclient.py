@@ -47,21 +47,21 @@ def processPacket(response):
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
-        #print(batch)
+        print(batch)
         badcounter = 0
         for pair in batch.ip: 
             src = pair.src
             dst = pair.dest
             try: 
-                srchost = socket.getfqdn(src)
-            except Exception as e: #catch any exceptions, not keyboard interrupts though... maybe not needed
-                srchost = ""
+                src_host = socket.getfqdn(src)
+            except Exception as e:
+                src_host = "none"
             try: 
-                dsthost = socket.getfqdn(dst)
-            except Exception as e: #catch any exceptions, not keyboard interrupts though... maybe not needed
-                dsthost = ""
+                dst_host = socket.getfqdn(dst)
+            except Exception as e:
+                dst_host = "none"
             for bad_keyword in badsite_keywords:
-                if (bad_keyword in srchost or bad_keyword in dst_host)
+                if (bad_keyword in src_host or bad_keyword in dst_host):
                     badcounter=badcounter+1
         ptg = (100*badcounter)/(len(batch.ip))
         #print(ptg)

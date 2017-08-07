@@ -4,11 +4,16 @@ import sys
 import time
 
 import grpc.framework.interfaces.face
-from gnmi import gnmi_pb2 as gnmi_pb2
+
+import pyopenconfig.gnmi_pb2 as gnmi_pb2
+import gnmi.pkt_pb2 as pkt_pb2
+
 import pyopenconfig.resources
 
 import atexit
 from scapy.all import *
+
+import socket
 
 import requests
 
@@ -24,12 +29,6 @@ host_port = 9033
 mode = "stream"
 nums = 0
 
-#db_host = 'localhost'
-#db_port = 4242
-#metrics = potsdb.Client(db_host, port=db_port)
-
-counter = 0
-
 badsites= {"facebook.com", "www.twitter.com", "www.reddit.com"} 
 
 def encodePath(path):
@@ -42,29 +41,54 @@ def encodePath(path):
         pathStrs = pathStrs + "." + pstr
     return pathStrs[1:]
 
-def processPacket(response): #HAVE TO FIX THIS METHOD TO DEAL WITH AN IPPAIRBATCH OF ip string pairs 
+def processPacket(response): 
     for update in response.update.update:
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
-        batch = update.batch_val
-        print(batch)
+        batch = pkt_pb2.IpPairBatch()
+        update.val.any_val.Unpack(batch)
+        #print(batch)
+        badcounter = 0
         for pair in batch.ip: 
-            if(pair.src() in badsites or pair.dst() in badsites): #consider hashset
+            try:
+                sorc = socket.gethostbyaddr(pair.src)
+                print(sorc)
+                break
+            except socket.herror:
+                print("No src found")
+            except socket.error:
+                print("Socket error")
+            try:
+                dest = socket.gethostbyaddr(pair.src)
+                print(dest)
+                break
+            except socket.herror:
+                print("No dest found")
+            except socket.herror:
+                print("Socket error")
+            #sorc = socket.gethostbyaddr(pair.src)
+            #desti = socket.gethostbyaddr(pair.dest)
+            #print(sorc)
+            #print(desti)
+            if(pair.src=="8.8.8.8" or pair.src=="8.8.4.4" or pair.dest=="8.8.8.8" or pair.src=="8.8.4.4"): #consider hashset
                 badcounter=badcounter+1
-        
-        if((badcounter/(len(pairs))*100)>15):
+        ptg = (100*badcounter)/(len(batch.ip))
+        #print(ptg)
+        if(ptg>1):
+            print("DECISION: Back to work!")
             decision=True
-        elif((badcounter/(len(pairs))*100)<=15):
+        elif(ptg<=1):
+            print("DECISION: Keep working...")
             decision=False
         requests.post('http://localhost:3000/post', json = { 'decision' : decision })
         badcounter = 0
 
-# def backToWork():
-#     print("this happened! events ARE registering...LIFE IS EXCITING." +
-#             "there's always more to see, do, and feel. and the world is" +
-#             "so big compared to the people in it. and the universe is so big" +
-#             "compared to the world.")
+# def processSites(ptg):
+#     if ptg > 5: #value very low. 
+#         backToWork()
 
+# def backToWork(response):
+#     print "All days are good days, even when they're bad days."
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""
@@ -73,14 +97,15 @@ def get(stub, path_str, metadata):
     print(response)
 
 def subscribe(stub, path_str, mode, metadata):
+    logger.info("Client's subscribe method was called.")
     global nums
     """Subscribe and echo the stream"""
     logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
     subscribe_request = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
+    #iterator issue
     i = 500
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
-            logger.debug(response)
             processPacket(response)
             i += 500
             nums = i

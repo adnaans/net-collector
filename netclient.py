@@ -54,10 +54,14 @@ def processPacket(response):
             dst = pair.dest
             try: 
                 src_host = socket.getfqdn(src)
+                print "host"
+                print src_host
             except Exception as e:
                 src_host = "none"
             try: 
                 dst_host = socket.getfqdn(dst)
+                print "dest"
+                print dst_host
             except Exception as e:
                 dst_host = "none"
             for bad_keyword in badsite_keywords:

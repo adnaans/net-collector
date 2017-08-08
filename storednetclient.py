@@ -34,7 +34,7 @@ db_host = 'localhost'
 db_port = 4242
 metrics = potsdb.Client(db_host, port=db_port)
 
-badsite_keywords= {"facebook", "twitter", "reddit", "netflix"}
+badsite_keywords= {"facebook", "twitter", "reddit", "netflix", "amazon"}
 path = "" 
 
 def encodePath(path):
@@ -58,6 +58,7 @@ def saveToTSDB(ptg, response):
 
 def processPacket(response): 
     for update in response.update.update:
+        print "received something"
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
@@ -78,14 +79,14 @@ def processPacket(response):
                 if (bad_keyword in src_host or bad_keyword in dst_host):
                     badcounter=badcounter+1
         ptg = float(100)*float(badcounter)/float(len(batch.ip))
-        #print(ptg)
-        if(ptg>1):
+        if(ptg>5):
             print("DECISION: Back to work!")
             decision=True
-        elif(ptg<=1):
+        elif(ptg<=5):
             print("DECISION: Keep working...")
             decision=False
         #requests.post('http://localhost:3000/post', json = { 'decision' : decision })
+        #uncomment for real thing
         badcounter = 0
         return ptg
 

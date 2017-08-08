@@ -84,6 +84,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
             update_msg.append(self.getPacketData())
             tm = int(time.time() * 1000)
             notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
+            print "sent a response."
             yield gnmi_pb2.SubscribeResponse(update=notif)
         print "Streaming done: close channel"
 

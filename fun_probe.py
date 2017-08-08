@@ -42,7 +42,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         pass
 
     def getPacketData(self):
-        packet = scapy.sniff(count=1,iface="eth1")[0]
+        packet = scapy.sniff(iface="eth0",count=1)[0]
         if packet:
           logger.info("A packet has been collected...")
         if scapy.Ether in packet:

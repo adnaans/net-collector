@@ -85,7 +85,7 @@ def processPacket(response):
         elif(ptg<=1):
             print("DECISION: Keep working...")
             decision=False
-        requests.post('http://localhost:3000/post', json = { 'decision' : decision })
+        #requests.post('http://localhost:3000/post', json = { 'decision' : decision })
         badcounter = 0
         return ptg
 

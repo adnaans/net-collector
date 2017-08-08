@@ -119,7 +119,6 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             #pathStrs.append(pstr)
         #return pathStrs
 
-
 def serve():
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='localhost',
@@ -127,8 +126,8 @@ def serve():
     parser.add_argument('--port', type=int, default="",
                         help='OpenConfig server port')
 
-    parser.add_argument('--d1host', default='localhost', help='ip address for device 1')
-    parser.add_argument('--d2host', default='localhost', help='ip address for device 2')
+    parser.add_argument('--d1host', default='', help='ip address for device 1')
+    parser.add_argument('--d2host', default='', help='ip address for device 2')
 
     parser.add_argument('--d1port', default='', help='port for device 1')
     parser.add_argument('--d2port', default='', help='port for device 2')
@@ -159,11 +158,13 @@ def serve():
     logger.info("Connecting to: " + device1_ip + " : " + device1_port)
     logger.info("Connecting to: " + device2_ip + " : " + device2_port)
     
-    channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
-    stub1 = gnmi_pb2_grpc.gNMIStub(channel1)
+    if device1_ip and device1_port:
+        channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
+        stub1 = gnmi_pb2_grpc.gNMIStub(channel1)
 
-    channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
-    stub2 = gnmi_pb2_grpc.gNMIStub(channel2)
+    if device2_ip and device2_port:
+        channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
+        stub2 = gnmi_pb2_grpc.gNMIStub(channel2)
 
     #start streaming
     stubs = [stub1, stub2]

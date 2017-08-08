@@ -49,8 +49,8 @@ def encodePath(path):
 
 def saveToTSDB(ptg, response):
     global path
-    path = pyopenconfig.resources.make_path(path) #not sure if this is the correct encoding procedure.
-    path_metric = encodePath(path)  
+    the_path = pyopenconfig.resources.make_new_path(path)
+    path_metric = encodePath(the_path.elem) 
     tm = response.update.timestamp
     metrics.send(path_metric, ptg, timestamp=tm)
     logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, value))
@@ -88,13 +88,6 @@ def processPacket(response):
         requests.post('http://localhost:3000/post', json = { 'decision' : decision })
         badcounter = 0
         return ptg
-
-# def processSites(ptg):
-#     if ptg > 5: #value very low. 
-#         backToWork()
-
-# def backToWork(response):
-#     print "All days are good days, even when they're bad days."
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""
@@ -155,6 +148,7 @@ def run():
     group.add_argument('--subscribe', type=str, default='interfaces/ethnet/state',
                        help='OpenConfig path to subscribe to')
     args = parser.parse_args()
+
     global path
     path = args.subscribe
 

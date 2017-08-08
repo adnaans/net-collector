@@ -177,8 +177,10 @@ def serve():
         if stub:
             t = threading.Thread(target=CollectorServicer().stream, args=(stub, iter([])))
             threads.append(t)
+            t.daemon = True
             t.start()
     processingT = threading.Thread(target=CollectorServicer().processThatQ)
+    processingT.daemon = True
     threads.append(processingT)
     processingT.start()
 

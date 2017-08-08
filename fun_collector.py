@@ -95,8 +95,6 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                 response = gnmi_pb2.SubscribeResponse(update=notif)
-                logger.info("This is what the collector is trying to send to the client: ")
-                logger.info(response)
                 yield response
 
         print "Streaming done!"
@@ -129,8 +127,8 @@ def serve():
     parser.add_argument('--port', type=int, default="",
                         help='OpenConfig server port')
 
-    parser.add_argument('--d1host', default='', help='ip address for device 1')
-    parser.add_argument('--d2host', default='', help='ip address for device 2')
+    parser.add_argument('--d1host', default='localhost', help='ip address for device 1')
+    parser.add_argument('--d2host', default='localhost', help='ip address for device 2')
 
     parser.add_argument('--d1port', default='', help='port for device 1')
     parser.add_argument('--d2port', default='', help='port for device 2')

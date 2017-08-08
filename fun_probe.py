@@ -42,39 +42,35 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
         pass
 
     def getPacketData(self):
-        packet = scapy.sniff(iface="eth0",count=1)[0]
+        packet = scapy.sniff(iface="eth1",count=1)[0]
         if packet:
-          logger.info("A packet has been collected...")
-        if scapy.Ether in packet:
-            ethernet = pkt_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)
-        else:
-            ethernet = None
-        if scapy.IP in packet:
-            ipp = pkt_pb2.IP(version=packet[scapy.IP].version, ihl=packet[scapy.IP].ihl, tos=packet[scapy.IP].tos,
+          if scapy.Ether in packet:
+              ethernet = pkt_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)
+          else:
+              ethernet = None
+          if scapy.IP in packet:
+              ipp = pkt_pb2.IP(version=packet[scapy.IP].version, ihl=packet[scapy.IP].ihl, tos=packet[scapy.IP].tos,
                                 len=packet[scapy.IP].len, id=packet[scapy.IP].id, flags=packet[scapy.IP].flags,
                                 frag=packet[scapy.IP].frag, ttl=packet[scapy.IP].ttl, proto=packet[scapy.IP].proto,
                                 chksum=packet[scapy.IP].chksum, src=packet[scapy.IP].src, dst=packet[scapy.IP].dst)
-        else:
-            ipp = None
-        if scapy.TCP in packet:
-            logger.info("window: " + str(packet[scapy.TCP].window))
-            logger.info("flags: " + str(packet[scapy.TCP].flags))
-            tcp = pkt_pb2.TCP(sport=packet[scapy.TCP].sport, dport=packet[scapy.TCP].dport, seq=packet[scapy.TCP].seq,
+          else:
+              ipp = None
+          if scapy.TCP in packet:
+              tcp = pkt_pb2.TCP(sport=packet[scapy.TCP].sport, dport=packet[scapy.TCP].dport, seq=packet[scapy.TCP].seq,
                                 ack=packet[scapy.TCP].ack, dataofs=packet[scapy.TCP].dataofs, reserved=packet[scapy.TCP].reserved,
                                 flags=packet[scapy.TCP].flags, window=packet[scapy.TCP].window, chksum=packet[scapy.TCP].chksum)
-            #urgptr=packet[scapy.TCP].urgptr - later add if figure out why error
-        else:
-            tcp = None
-        if scapy.Raw in packet:
-            raw = pkt_pb2.Raw(load=packet[scapy.Raw].load) #if this doesn't work try decode('utf-16')
-        else:
-            raw = None
-        gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
-        any_msg = any_pb2.Any()
-        any_msg.Pack(gnmiPacket)
-        typedVal = gnmi_pb2.TypedValue(any_val=any_msg)
-        update = gnmi_pb2.Update(val=typedVal)
-        return update
+          else:
+              tcp = None
+          if scapy.Raw in packet:
+              raw = pkt_pb2.Raw(load=packet[scapy.Raw].load) 
+          else:
+              raw = None
+          gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
+          any_msg = any_pb2.Any()
+          any_msg.Pack(gnmiPacket)
+          typedVal = gnmi_pb2.TypedValue(any_val=any_msg)
+          update = gnmi_pb2.Update(val=typedVal)
+          return update
 
     def Subscribe(self, request_iterator, context): 
         logger.info("Probe has received a subscribe request.")

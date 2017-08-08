@@ -47,29 +47,24 @@ def processPacket(response):
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
-        #print(batch)
+        print(batch)
         badcounter = 0
         for pair in batch.ip: 
             src = pair.src
             dst = pair.dest
             try: 
                 src_host = socket.getfqdn(src)
-                #print "host"
-                print src_host
             except Exception as e:
                 src_host = "none"
             try: 
                 dst_host = socket.getfqdn(dst)
-                #print "dest"
-                print dst_host
             except Exception as e:
                 dst_host = "none"
             for bad_keyword in badsite_keywords:
                 if (bad_keyword in src_host or bad_keyword in dst_host):
                     badcounter=badcounter+1
-                    print "caught"
         ptg = (100*badcounter)/(len(batch.ip))
-        print(ptg)
+        #print(ptg)
         if(ptg>1):
             print("DECISION: Back to work!")
             decision=True
@@ -141,14 +136,14 @@ def run():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--get',
                        help='OpenConfig path to perform a single-shot get')
-    group.add_argument('--subscribe', type=str, default='interfaces/eth1/ip',
+    group.add_argument('--subscribe', type=str, default='interfaces/eth0/ip',
                        help='OpenConfig path to subscribe to')
     args = parser.parse_args()
 
     metadata = None
     if args.debug == "off":
         logger.setLevel(logging.INFO)
-    
+        
     if args.username or args.password:
         metadata = [("username", args.username), ("password", args.password)]
 

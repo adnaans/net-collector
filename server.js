@@ -18,16 +18,15 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
-var pastdecision = false;
 
 app.use( bodyParser.json() );
 
 app.post('/post', function (req, res) {
   console.log(req.body)
-  if(req.body['decision'] && pastdecision == false){
+  if(req.body['decision']){
     io.emit('backtowork');
   }
-  else if(req.body['decision']==false && pastdecision == true){
+  else if(req.body['decision']==false){
     io.emit('keepworking');
   }
   else{

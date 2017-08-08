@@ -37,8 +37,8 @@ app.post('/post', function (req, res) {
 
 app.use(express.static(__dirname))
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+http.listen(3001, function(){
+  console.log('listening on *:3001');
 });
 
 

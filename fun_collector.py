@@ -127,8 +127,8 @@ def serve():
     parser.add_argument('--port', type=int, default="",
                         help='OpenConfig server port')
 
-    parser.add_argument('--d1host', default='localhost', help='ip address for device 1')
-    parser.add_argument('--d2host', default='localhost', help='ip address for device 2')
+    parser.add_argument('--d1host', default='', help='ip address for device 1')
+    parser.add_argument('--d2host', default='', help='ip address for device 2')
 
     parser.add_argument('--d1port', default='', help='port for device 1')
     parser.add_argument('--d2port', default='', help='port for device 2')

@@ -56,6 +56,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
     def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator): 
             if response.update:
+                print "got smth!"
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:
                 pass
@@ -95,6 +96,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                 response = gnmi_pb2.SubscribeResponse(update=notif)
+                print "sent something!"
                 yield response
 
         print "Streaming done!"

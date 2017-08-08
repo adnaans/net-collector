@@ -158,6 +158,8 @@ def serve():
     logger.info("Connecting to: " + device1_ip + " : " + device1_port)
     logger.info("Connecting to: " + device2_ip + " : " + device2_port)
     
+    stub1 = None
+    stub2 = None
     if device1_ip and device1_port:
         channel1 = grpc.insecure_channel(device1_ip + ":" + str(device1_port))
         stub1 = gnmi_pb2_grpc.gNMIStub(channel1)
@@ -170,9 +172,10 @@ def serve():
     stubs = [stub1, stub2]
     threads = []
     for stub in stubs: #sends dummy iter to probe.
-        t = threading.Thread(target=CollectorServicer().stream, args=(stub, iter([])))
-        threads.append(t)
-        t.start()
+        if stub:
+            t = threading.Thread(target=CollectorServicer().stream, args=(stub, iter([])))
+            threads.append(t)
+            t.start()
     processingT = threading.Thread(target=CollectorServicer().processThatQ)
     threads.append(processingT)
     processingT.start()

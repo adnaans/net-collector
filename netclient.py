@@ -30,7 +30,7 @@ host_port = 9033
 mode = "stream"
 nums = 0
 
-badsite_keywords= {"twitter", "reddit", "welovecatsandkittens"} 
+badsite_keywords= {"twitter", "reddit", "facebook"} 
 
 def encodePath(path):
     pathStrs = "" 
@@ -62,18 +62,18 @@ def processPacket(response):
             except Exception as e:
                 dst_host = "none"
 
-            print src_host
-            print dst_host
+            #print src_host
+            #print dst_host
 
             for bad_keyword in badsite_keywords:
                 if (bad_keyword in src_host or bad_keyword in dst_host):
                     badcounter=badcounter+1
         ptg = float(100)*float(badcounter)/float(len(batch.ip))
-        #print(ptg)
-        if(ptg>1):
+        print(ptg)
+        if(ptg>5):
             print("DECISION: Back to work!")
             decision=True
-        elif(ptg<=1):
+        elif(ptg<=5):
             print("DECISION: Keep working...")
             decision=False
         requests.post('http://localhost:3001/post', json = { 'decision' : decision })

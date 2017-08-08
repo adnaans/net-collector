@@ -21,7 +21,7 @@
           console.log("backtowork");
           document.getElementById("msg").innerHTML = "GET BACK TO WORK!";
           document.getElementById("bg").style.backgroundColor =	"#FF0000";
-          setInterval(function() //Flashes the background
+          /*setInterval(function() //Flashes the background
             {
                 var bgcolor=window.getComputedStyle(document.getElementById('bg')).getPropertyValue('background-color');
                 console.log(bgcolor);
@@ -34,7 +34,7 @@
                   console.log("switch to white");
                   document.getElementById('bg').style.backgroundColor = "#FFF";
                 }
-            }, 1500);
+            }, 1500);*/
         });
         socket.on('keepworking', function(){
           console.log("keepworking");

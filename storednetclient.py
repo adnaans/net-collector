@@ -52,8 +52,9 @@ def saveToTSDB(ptg, response):
     the_path = pyopenconfig.resources.make_new_path(path)
     path_metric = encodePath(the_path.elem) 
     tm = response.update.timestamp
+    print(path_metric)
     metrics.send(path_metric, ptg, timestamp=tm)
-    logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, value))
+    logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, ptg))
 
 def processPacket(response): 
     for update in response.update.update:
@@ -61,7 +62,6 @@ def processPacket(response):
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
-        print(batch)
         badcounter = 0
         for pair in batch.ip: 
             src = pair.src
@@ -85,7 +85,7 @@ def processPacket(response):
         elif(ptg<=1):
             print("DECISION: Keep working...")
             decision=False
-        requests.post('http://localhost:3000/post', json = { 'decision' : decision })
+        #requests.post('http://localhost:3000/post', json = { 'decision' : decision })
         badcounter = 0
         return ptg
 

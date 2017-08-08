@@ -89,13 +89,6 @@ def processPacket(response):
         badcounter = 0
         return ptg
 
-# def processSites(ptg):
-#     if ptg > 5: #value very low. 
-#         backToWork()
-
-# def backToWork(response):
-#     print "All days are good days, even when they're bad days."
-
 def get(stub, path_str, metadata):
     """Get and echo the response"""
     response = stub.Get(pyopenconfig.resources.make_get_request(path_str),

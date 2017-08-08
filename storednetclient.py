@@ -30,7 +30,7 @@ host_port = 9033
 mode = "stream"
 nums = 0
 
-db_host = '10.1.8.151'
+db_host = 'localhost'
 db_port = 4242
 metrics = potsdb.Client(db_host, port=db_port)
 
@@ -49,8 +49,8 @@ def encodePath(path):
 
 def saveToTSDB(ptg, response):
     global path
-    path = pyopenconfig.resources.make_new_path(path) #not sure if this is the correct encoding procedure.
-    path_metric = encodePath(path)  
+    the_path = pyopenconfig.resources.make_new_path(path)
+    path_metric = encodePath(the_path.elem) 
     tm = response.update.timestamp
     metrics.send(path_metric, ptg, timestamp=tm)
     logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, value))

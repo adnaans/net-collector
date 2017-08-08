@@ -4,6 +4,7 @@ import sys
 import time
 
 import grpc.framework.interfaces.face
+import potsdb
 
 import pyopenconfig.gnmi_pb2 as gnmi_pb2
 import gnmi.pkt_pb2 as pkt_pb2
@@ -31,8 +32,9 @@ nums = 0
 
 db_host = 'localhost'
 db_port = 4242
+metrics = potsdb.Client(db_host, port=db_port)
 
-badsite_keywords= {"facebook", "twitter", "reddit"}
+badsite_keywords= {"facebook", "twitter", "reddit", "netflix"}
 path = "" 
 
 def encodePath(path):
@@ -47,7 +49,8 @@ def encodePath(path):
 
 def saveToTSDB(ptg, response):
     global path
-    path_metric = encodePath(path) 
+    path = pyopenconfig.resources.make_path(path) #not sure if this is the correct encoding procedure.
+    path_metric = encodePath(path)  
     tm = response.update.timestamp
     metrics.send(path_metric, ptg, timestamp=tm)
     logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, value))
@@ -149,7 +152,7 @@ def run():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--get',
                        help='OpenConfig path to perform a single-shot get')
-    group.add_argument('--subscribe', type=str, default='interfaces/eth0/ip',
+    group.add_argument('--subscribe', type=str, default='interfaces/ethnet/state',
                        help='OpenConfig path to subscribe to')
     args = parser.parse_args()
     global path

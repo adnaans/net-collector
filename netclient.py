@@ -12,6 +12,7 @@ import pyopenconfig.resources
 
 import atexit
 from scapy.all import *
+from decimal import *
 
 import socket
 
@@ -67,7 +68,7 @@ def processPacket(response):
             for bad_keyword in badsite_keywords:
                 if (bad_keyword in src_host or bad_keyword in dst_host):
                     badcounter=badcounter+1
-        ptg = (100*badcounter)/(len(batch.ip))
+        ptg = float(100)*float(badcounter)/float(len(batch.ip))
         #print(ptg)
         if(ptg>1):
             print("DECISION: Back to work!")

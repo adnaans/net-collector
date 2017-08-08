@@ -29,7 +29,7 @@ host_port = 9033
 mode = "stream"
 nums = 0
 
-badsite_keywords= {"facebook", "twitter", "reddit"} 
+badsite_keywords= {"twitter", "reddit", "welovecatsandkittens"} 
 
 def encodePath(path):
     pathStrs = "" 
@@ -47,7 +47,7 @@ def processPacket(response):
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
-        print(batch)
+        #print(batch)
         badcounter = 0
         for pair in batch.ip: 
             src = pair.src
@@ -60,6 +60,10 @@ def processPacket(response):
                 dst_host = socket.getfqdn(dst)
             except Exception as e:
                 dst_host = "none"
+
+            print src_host
+            print dst_host
+
             for bad_keyword in badsite_keywords:
                 if (bad_keyword in src_host or bad_keyword in dst_host):
                     badcounter=badcounter+1
@@ -71,7 +75,7 @@ def processPacket(response):
         elif(ptg<=1):
             print("DECISION: Keep working...")
             decision=False
-        requests.post('http://localhost:3000/post', json = { 'decision' : decision })
+        requests.post('http://localhost:3001/post', json = { 'decision' : decision })
         badcounter = 0
 
 # def processSites(ptg):

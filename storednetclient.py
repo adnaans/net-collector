@@ -49,7 +49,7 @@ def encodePath(path):
 
 def saveToTSDB(ptg, response):
     global path
-    path = pyopenconfig.resources.make_path(path) #not sure if this is the correct encoding procedure.
+    path = pyopenconfig.resources.make_new_path(path) #not sure if this is the correct encoding procedure.
     path_metric = encodePath(path)  
     tm = response.update.timestamp
     metrics.send(path_metric, ptg, timestamp=tm)

@@ -84,12 +84,13 @@ def processPacket(response):
             dst_bad = lookup(pair.dest)
             if src_bad or dst_bad:
                 badcounter += 1
+        print badcounter
         ptg = 100.0 * badcounter / len(batch.ip)
         if ptg > 8:
-            print("DECISION: Back to work!")
+            print("DECISION: Back to work!", ptg)
             decision=True
         else:
-            print("DECISION: Keep working...")
+            print("DECISION: Keep working...", ptg)
             decision=False
         #saveToTSDB(ptg, response)
         requests.post('http://localhost:3001/post', json = { 'decision' : decision })

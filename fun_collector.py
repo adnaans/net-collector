@@ -69,7 +69,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             try:
                 pkgdPkt = processingQ.get(timeout=5) #block for at most 5 seconds
                 PAIR_LIST.append(pkgdPkt)
-                if len(PAIR_LIST)>=300:
+                if len(PAIR_LIST)>=500:
                     send = True 
             except Queue.Empty:
                 # send what we have so far if we have a timeout in q.get()
@@ -77,11 +77,12 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                     send = True
             if send:
                 print datetime.now(), "sending batch of size:", len(PAIR_LIST)
+#for pair in PAIR_LIST:
                 batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST, id=nextId)
                 nextId += 1
                 for q in queues:
                     q.put(batch)
-            PAIR_LIST = []
+                PAIR_LIST = []
 
 
     def Subscribe(self, request_iterator, context):

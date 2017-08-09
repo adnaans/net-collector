@@ -69,7 +69,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 pkgdPkt = None
             if pkgdPkt != None: 
                 PAIR_LIST.append(pkgdPkt)
-                if (len(PAIR_LIST)>=200): 
+                if (len(PAIR_LIST)>=300): 
                     for pair in PAIR_LIST:
                         batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST)
                         for q in queues:
@@ -94,7 +94,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                 response = gnmi_pb2.SubscribeResponse(update=notif)
-                print "sent something!"
+                print(str(tm) + " sent something!")
                 yield response
 
         print "Streaming done!"

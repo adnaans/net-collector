@@ -32,7 +32,7 @@ db_host = 'localhost'
 db_port = 4242
 metrics = potsdb.Client(db_host, port=db_port, qsize=25, mps=20)
 
-badsite_keywords= {"facebook", "twitter", "reddit", "netflix", "amazon"}
+badsite_keywords= {"facebook", "twitter", "reddit", "netflix"}
 path = "" 
 
 def encodePath(path):

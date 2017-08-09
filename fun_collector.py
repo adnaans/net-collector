@@ -94,7 +94,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                 response = gnmi_pb2.SubscribeResponse(update=notif)
-                print(str(tm) + " sent something!")
+                print time.time(), batch
                 yield response
 
         print "Streaming done!"

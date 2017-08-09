@@ -77,7 +77,7 @@ def processPacket(response):
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
-        print datetime.datetime.now(), "received batch"#, batch.id
+        print datetime.datetime.now(), "received batch", batch.id
         badcounter = 0
         for pair in batch.ip: 
             src_bad = lookup(pair.src)

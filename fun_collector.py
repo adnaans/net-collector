@@ -70,7 +70,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 pkgdPkt = None
             if pkgdPkt != None: 
                 PAIR_LIST.append(pkgdPkt)
-                if (len(PAIR_LIST)>=500): 
+                if (len(PAIR_LIST)>=250): 
                     for pair in PAIR_LIST:
                         batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST)
                         for q in queues:

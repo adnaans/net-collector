@@ -67,6 +67,7 @@ message Raw {
 //For filtering 
 message IpPairBatch {
   repeated IpPair ip = 1;
+  int64 id = 2;
 }
 message IpPair { 
   string src = 1;

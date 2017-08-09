@@ -12,10 +12,8 @@ import gnmi.pkt_pb2 as pkt_pb2
 import pyopenconfig.resources
 
 import atexit
-from scapy.all import *
 
 import socket
-
 import requests
 
 # - logging configuration
@@ -24,8 +22,8 @@ logger = logging.getLogger('netclient')
 
 logger.setLevel(logging.DEBUG)
 
-host_ip = "" #h4.IP()
-host_port = 9033
+host_ip = ""
+host_port = 9033 #random
 
 mode = "stream"
 nums = 0
@@ -77,9 +75,7 @@ def processPacket(response):
             for bad_keyword in badsite_keywords:
                 if (bad_keyword in src_host or bad_keyword in dst_host):
                     badcounter=badcounter+1
-        print(badcounter)
         ptg = float(100)*float(badcounter)/float(len(batch.ip))
-        print(ptg)
         if(ptg>8):
             print("DECISION: Back to work!")
             decision=True

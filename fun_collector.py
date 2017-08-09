@@ -56,7 +56,6 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
     def stream(self, stub, request_iterator):  
         for response in stub.Subscribe(request_iterator): 
             if response.update:
-                print "got smth!"
                 processingQ.put(self.filterAndPackage(response.update)) 
             else:
                 pass
@@ -82,7 +81,6 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         queues.append(q)
 
         while True:
-            #for q in queues: 
             batch = None
             try: 
                 batch = q.get(False)
@@ -100,26 +98,6 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 yield response
 
         print "Streaming done!"
-    
-    #def saveToPathTree(self, update): #what is the point of this pathtree... we should ask song eventually
-        #tm = update.timestamp
-        #updates = update.update
-
-        #for u in updates:
-           #path = u.path
-           #val = u.val
-           #pathStrs = self.encodePath(path.elem)
-           #self.ptree.add(pathStrs, tm, val.ip)
-
-    #def encodePath(self, path):
-        #pathStrs = []
-        #for pe in path:
-            #pstr = pe.name
-            #if pe.key:
-                #for k, v in pe.key.iteritems():
-                    #pstr += "[" + str(k) + "=" + str(v) + "]"
-            #pathStrs.append(pstr)
-        #return pathStrs
 
 def serve():
     parser = argparse.ArgumentParser()

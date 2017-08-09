@@ -29,7 +29,7 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 host='localhost'
 port=9030
-time_frequency = 0.001
+time_frequency = 1
 
 #gNMI service which provides all rpc calls for gNMI client 
 class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
@@ -73,14 +73,9 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
           return update
 
     def Subscribe(self, request_iterator, context): 
-        logger.info("Probe has received a subscribe request.")
-        tag = 0
-        #for request in request_iterator: #IGNORED
-        #sublist = request.subscribe.subscription
-        #mode = request.subscribe.mode    
+        logger.info("Probe has received a subscribe request.")  
         while(1):
             update_msg = []
-            #for sub in sublist:
             update_msg.append(self.getPacketData())
             tm = int(time.time() * 1000)
             notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)

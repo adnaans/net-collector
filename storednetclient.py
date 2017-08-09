@@ -52,7 +52,6 @@ def saveToTSDB(ptg, response):
     the_path = pyopenconfig.resources.make_new_path(path)
     path_metric = encodePath(the_path.elem) 
     tm = response.update.timestamp
-    print(path_metric)
     metrics.send(path_metric, ptg, timestamp=tm)
     logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, ptg))
 
@@ -78,17 +77,18 @@ def processPacket(response):
             for bad_keyword in badsite_keywords:
                 if (bad_keyword in src_host or bad_keyword in dst_host):
                     badcounter=badcounter+1
+        print(badcounter)
         ptg = float(100)*float(badcounter)/float(len(batch.ip))
+        print(ptg)
         if(ptg>5):
             print("DECISION: Back to work!")
             decision=True
         elif(ptg<=5):
             print("DECISION: Keep working...")
             decision=False
-        #requests.post('http://localhost:3000/post', json = { 'decision' : decision })
-        #uncomment for real thing
+        saveToTSDB(ptg, response)
+        #requests.post('http://localhost:3001/post', json = { 'decision' : decision })
         badcounter = 0
-        return ptg
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""
@@ -106,8 +106,7 @@ def subscribe(stub, path_str, mode, metadata):
     i = 500
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
-            ptg = processPacket(response)
-            saveToTSDB(ptg, response)
+            processPacket(response)
             i += 500
             nums = i
     except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception

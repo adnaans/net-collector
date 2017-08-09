@@ -87,7 +87,7 @@ def processPacket(response):
             print("DECISION: Keep working...")
             decision=False
         saveToTSDB(ptg, response)
-        #requests.post('http://localhost:3001/post', json = { 'decision' : decision })
+        requests.post('http://localhost:3001/post', json = { 'decision' : decision })
         badcounter = 0
 
 def get(stub, path_str, metadata):

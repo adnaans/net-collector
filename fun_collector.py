@@ -75,7 +75,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 if len(PAIR_LIST) > 0:
                     send = True
             if send:
-                print "batch of size", len(PAIR_LIST)
+                print datetime.now(), "sending batch of size:", len(PAIR_LIST)
                 for pair in PAIR_LIST:
                     batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST)
                     for q in queues:
@@ -96,7 +96,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             tm = int(time.time() * 1000)
             notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
             response = gnmi_pb2.SubscribeResponse(update=notif)
-            print datetime.now() 
+            print datetime.now(), "yielding batch of size:", len(batch.ip)
             yield response
 
         print "Streaming done!"

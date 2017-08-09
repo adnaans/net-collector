@@ -15,7 +15,7 @@ enum34, futures, grpcio, potsdb, protobuf, six, scapy
 ```sh
     brew services start grafana
 ```
-### Start web server  
+### Start the web server  
 In the net-collector directory run: 
 ```sh
     node server.js
@@ -40,3 +40,6 @@ Run the client:
     python storednetclient.py --host [IP of Collector's HOST] --port [Collector's PORT] --subscribe ["any/separated/string"]
 ```
 String is by default interfaces/ethnet/state, metrics will appear under this name in the tsdb and grafana.
+
+### View the server page
+Go to localhost:3001 in a browser on the device running storednetclient.py, or go to [ip of device running storednetclient.py]:3001 on a separate device's browser.

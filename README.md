@@ -4,7 +4,7 @@
 Docker, Grafana  
 
 (Dependecies):  
-enum34, futures, grpcio, potsdb, protobuf, six, scapy  
+enum34, futures, grpcio, potsdb, protobuf, six, scapy
 
 1. Run OpenTSDB, preferrably using a Docker image.
 ```sh
@@ -14,7 +14,7 @@ enum34, futures, grpcio, potsdb, protobuf, six, scapy
 ```sh
     brew services start grafana
 ```
-3. Start web server  
+3. Start web server
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. in net-collector directory run: 
 ```sh
     node server.js

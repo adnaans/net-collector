@@ -21,13 +21,13 @@ scapy
     brew services start grafana
 ```
 3. Start web server 
-    i. in net-collector directory run: 
+   i. in net-collector directory run: 
 
 ```
         node server.js
 ```
 
-    ii. by default, on localhost:3001
+   ii. by default, on localhost:3001
 4. ssh into server
 5. run probe(s): 
 

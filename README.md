@@ -14,12 +14,12 @@ enum34, futures, grpcio, potsdb, protobuf, six, scapy
 ```sh
     brew services start grafana
 ```
-3. Start web server
-    i. in net-collector directory run: 
+3. Start web server  
+i. in net-collector directory run: 
 ```sh
     node server.js
 ```  
-&nbsp;&nbsp;&nbsp;&nbsp;ii. by default, on localhost:3001
+ii. by default, on localhost:3001
 4. ssh into server
 5. run probe(s): 
 
@@ -30,10 +30,10 @@ enum34, futures, grpcio, potsdb, protobuf, six, scapy
 ```sh
     python fun_collector.py --host [IP of Host] --port [an OPEN PORT] --d1host [First Probe's Host IP] --d1port [first probe's port] 
     optional: --d2host, --d2port
-```  
-&nbsp;&nbsp;&nbsp;&nbsp;i. currently only two probes possible supported from commandline. 
+```
+i. currently only two probes possible supported from commandline. 
 7. run client:
 ```sh
     python storednetclient.py --host [IP of Collector's HOST] --port [Collector's PORT] --subscribe ["any/separated/string"]
 ```  
-&nbsp;&nbsp;&nbsp;&nbsp;i. string is by default interfaces/ethnet/state, metrics will appear under this name in the tsdb
+ii. string is by default interfaces/ethnet/state, metrics will appear under this name in the tsdb

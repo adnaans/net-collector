@@ -15,11 +15,11 @@ enum34, futures, grpcio, potsdb, protobuf, six, scapy
     brew services start grafana
 ```
 3. Start web server  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i. in net-collector directory run: 
+&nbsp;&nbsp;&nbsp;&nbsp;i. in net-collector directory run: 
 ```sh
     node server.js
 ```  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ii. by default, on localhost:3001
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ii. by default, on localhost:3001  
 4. ssh into server  
 5. run probe(s):  
 

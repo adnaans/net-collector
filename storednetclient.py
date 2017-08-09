@@ -2,6 +2,7 @@ import argparse
 import logging
 import sys
 import time
+import datetime
 
 import grpc.framework.interfaces.face
 import potsdb
@@ -32,7 +33,7 @@ db_host = 'localhost'
 db_port = 4242
 metrics = potsdb.Client(db_host, port=db_port, qsize=25, mps=20)
 
-badsite_keywords= {"facebook", "twitter", "reddit", "netflix"}
+badsite_keywords= {"facebook", "twitter", "reddit", "netflix", "fb", "messenger"}
 path = "" 
 
 def encodePath(path):
@@ -53,36 +54,44 @@ def saveToTSDB(ptg, response):
     metrics.send(path_metric, ptg, timestamp=tm)
     logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, ptg))
 
+ipCache = {}
+def lookup(ip):
+    if ip not in ipCache:
+        is_bad = False
+        hostname = "none"
+        try: 
+            hostname = socket.getfqdn(ip)
+        except Exception:
+            pass
+        for bad_keyword in badsite_keywords:
+            if bad_keyword in hostname:
+                is_bad = True
+                break
+        print ip, hostname, is_bad
+        ipCache[ip] = is_bad
+    return ipCache[ip]
+
 def processPacket(response): 
     for update in response.update.update:
-        print "received something"
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
         update.val.any_val.Unpack(batch)
+        print datetime.datetime.now(), "received batch"#, batch.id
         badcounter = 0
         for pair in batch.ip: 
-            src = pair.src
-            dst = pair.dest
-            try: 
-                src_host = socket.getfqdn(src)
-            except Exception as e:
-                src_host = "none"
-            try: 
-                dst_host = socket.getfqdn(dst)
-            except Exception as e:
-                dst_host = "none"
-            for bad_keyword in badsite_keywords:
-                if (bad_keyword in src_host or bad_keyword in dst_host):
-                    badcounter=badcounter+1
-        ptg = float(100)*float(badcounter)/float(len(batch.ip))
-        if(ptg>8):
+            src_bad = lookup(pair.src)
+            dst_bad = lookup(pair.dest)
+            if src_bad or dst_bad:
+                badcounter += 1
+        ptg = 100.0 * badcounter / len(batch.ip)
+        if ptg > 8:
             print("DECISION: Back to work!")
             decision=True
-        elif(ptg<=8):
+        else:
             print("DECISION: Keep working...")
             decision=False
-        saveToTSDB(ptg, response)
+        #saveToTSDB(ptg, response)
         requests.post('http://localhost:3001/post', json = { 'decision' : decision })
         badcounter = 0
 
@@ -99,11 +108,11 @@ def subscribe(stub, path_str, mode, metadata):
     logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
     subscribe_request = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
     #iterator issue
-    i = 500
+    i = 0
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
             processPacket(response)
-            i += 500
+            i += 300
             nums = i
     except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception
         if error.code == grpc.StatusCode.OUT_OF_RANGE and error.details == 'EOF':

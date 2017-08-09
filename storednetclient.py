@@ -32,7 +32,7 @@ nums = 0
 
 db_host = 'localhost'
 db_port = 4242
-metrics = potsdb.Client(db_host, port=db_port)
+metrics = potsdb.Client(db_host, port=db_port, qsize=20, mps=10)
 
 badsite_keywords= {"facebook", "twitter", "reddit", "netflix", "amazon"}
 path = "" 
@@ -80,10 +80,10 @@ def processPacket(response):
         print(badcounter)
         ptg = float(100)*float(badcounter)/float(len(batch.ip))
         print(ptg)
-        if(ptg>5):
+        if(ptg>8):
             print("DECISION: Back to work!")
             decision=True
-        elif(ptg<=5):
+        elif(ptg<=8):
             print("DECISION: Keep working...")
             decision=False
         saveToTSDB(ptg, response)

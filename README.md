@@ -13,9 +13,9 @@ six
 scapy 
 
 1. Run OpenTSDB, preferrably using a Docker image.
- 
+```
     docker run -p 4242:4242 petergrace/opentsdb-docker
-   
+```
 2. Start Grafana. (should already have opentsdb as data source).
     brew services start grafana
 3. Start web server 

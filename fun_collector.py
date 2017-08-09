@@ -36,7 +36,6 @@ logger.setLevel(logging.DEBUG)
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-PAIR_LIST = []
 
 class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
@@ -63,42 +62,44 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
 
     def processThatQ(self): 
         logger.info("thread to aggregate off collection q called.")
-        while True: 
-            try: 
-                pkgdPkt = processingQ.get(False) #STUCK HERE
-            except Queue.Empty:
-                pkgdPkt = None
-            if pkgdPkt != None: 
+        PAIR_LIST = []
+        while True:
+            send = False
+            try:
+                pkgdPkt = processingQ.get(timeout=5) #block for at most 5 seconds
                 PAIR_LIST.append(pkgdPkt)
-                if (len(PAIR_LIST)>=300): 
-                    for pair in PAIR_LIST:
-                        batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST)
-                        for q in queues:
-                            q.put(batch)
-                    del PAIR_LIST[:]
+                if len(PAIR_LIST)>=300:
+                    send = True 
+            except Queue.Empty:
+                # send what we have so far if we have a timeout in q.get()
+                if len(PAIR_LIST) > 0:
+                    send = True
+            if send:
+                for pair in PAIR_LIST:
+                    batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST)
+                    for q in queues:
+                        q.put(batch)
+                PAIR_LIST = []
+
 
     def Subscribe(self, request_iterator, context):
         q = Queue.Queue()
         queues.append(q)
 
         while True:
-            batch = None
-            try: 
-                batch = q.get(False)
-            except Queue.Empty:
-                batch = None
-            if batch!=None:
-                any_msg = any_pb2.Any()
-                any_msg.Pack(batch)
-                t = gnmi_pb2.TypedValue(any_val=any_msg)
-                update_msg = [gnmi_pb2.Update(val=t)]
-                tm = int(time.time() * 1000)
-                notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
-                response = gnmi_pb2.SubscribeResponse(update=notif)
-                print datetime.now() 
-                yield response
+            batch = q.get()
+            any_msg = any_pb2.Any()
+            any_msg.Pack(batch)
+            t = gnmi_pb2.TypedValue(any_val=any_msg)
+            update_msg = [gnmi_pb2.Update(val=t)]
+            tm = int(time.time() * 1000)
+            notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
+            response = gnmi_pb2.SubscribeResponse(update=notif)
+            print datetime.now() 
+            yield response
 
         print "Streaming done!"
+        #TODO remove q from queues
 
 def serve():
     parser = argparse.ArgumentParser()

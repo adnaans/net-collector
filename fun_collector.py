@@ -75,6 +75,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 if len(PAIR_LIST) > 0:
                     send = True
             if send:
+                print "batch of size", len(PAIR_LIST)
                 for pair in PAIR_LIST:
                     batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST)
                     for q in queues:

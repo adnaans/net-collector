@@ -77,12 +77,11 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                     send = True
             if send:
                 print datetime.now(), "sending batch of size:", len(PAIR_LIST)
-                for pair in PAIR_LIST:
-                    batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST, id=nextId)
-                    nextId += 1
-                    for q in queues:
-                        q.put(batch)
-                PAIR_LIST = []
+                batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST, id=nextId)
+                nextId += 1
+                for q in queues:
+                    q.put(batch)
+            PAIR_LIST = []
 
 
     def Subscribe(self, request_iterator, context):

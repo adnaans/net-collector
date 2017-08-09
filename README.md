@@ -2,6 +2,7 @@
 
 (For storage model):  
 Docker, Grafana  
+
 (Dependecies):  
 enum34, futures, grpcio, potsdb, protobuf, six, scapy  
 
@@ -18,7 +19,7 @@ enum34, futures, grpcio, potsdb, protobuf, six, scapy
 ```sh
     node server.js
 ```  
-    ii. by default, on localhost:3001
+&nbsp;&nbsp;&nbsp;&nbsp;ii. by default, on localhost:3001
 4. ssh into server
 5. run probe(s): 
 
@@ -30,9 +31,9 @@ enum34, futures, grpcio, potsdb, protobuf, six, scapy
     python fun_collector.py --host [IP of Host] --port [an OPEN PORT] --d1host [First Probe's Host IP] --d1port [first probe's port] 
     optional: --d2host, --d2port
 ```  
-    i. currently only two probes possible supported from commandline. 
+&nbsp;&nbsp;&nbsp;&nbsp;i. currently only two probes possible supported from commandline. 
 7. run client:
 ```sh
     python storednetclient.py --host [IP of Collector's HOST] --port [Collector's PORT] --subscribe ["any/separated/string"]
 ```  
-    i. string is by default interfaces/ethnet/state, metrics will appear under this name in the tsdb
+&nbsp;&nbsp;&nbsp;&nbsp;i. string is by default interfaces/ethnet/state, metrics will appear under this name in the tsdb

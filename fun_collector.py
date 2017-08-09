@@ -20,6 +20,7 @@ import argparse
 import Queue
 import threading 
 import copy
+import datetime
 
 from scapy.all import *
 
@@ -94,7 +95,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 tm = int(time.time() * 1000)
                 notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
                 response = gnmi_pb2.SubscribeResponse(update=notif)
-                print time.time(), batch
+                print datetime.now() 
                 yield response
 
         print "Streaming done!"

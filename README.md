@@ -33,7 +33,7 @@ ssh [user]@[server IP]
 Login and use the command. 
 
 ```sh
-    python fun_probe.py --host [IP of Switch] --port [an OPEN PORT]
+    python fun_probe.py --host [IP of Server] --port [an OPEN PORT]
 ```
 
 ### Running the collector

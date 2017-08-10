@@ -2,9 +2,9 @@
 
 ### Prerequisites
 (For storage model):  
-Docker, Grafana  
+Docker, Grafana 
 
-(Dependecies):  
+(Dependecies, should all be installable via pip):  
 enum34, futures, grpcio, potsdb, protobuf, six, scapy
 
 ### Run OpenTSDB
@@ -12,7 +12,7 @@ enum34, futures, grpcio, potsdb, protobuf, six, scapy
     docker run -p 4242:4242 petergrace/opentsdb-docker
 ```
 ### Start Grafana
-(You should already have opentsdb as data source).
+(You should already have opentsdb as data source). (Instruction is Mac OS X specific).
 ```sh
     brew services start grafana
 ```

@@ -97,7 +97,6 @@ def processPacket(response):
             decision=False
         saveToTSDB(ptg, response) #save percentage to time series database
         requests.post('http://localhost:3001/post', json = { 'decision' : decision }) #trigger display response
-        badcounter = 0
 
 def get(stub, path_str, metadata):
     """Get and echo the response"""

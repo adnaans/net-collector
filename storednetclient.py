@@ -92,7 +92,7 @@ def processPacket(response):
         else:
             print("DECISION: Keep working...", ptg)
             decision=False
-        #saveToTSDB(ptg, response)
+        saveToTSDB(ptg, response)
         requests.post('http://localhost:3001/post', json = { 'decision' : decision })
         badcounter = 0
 

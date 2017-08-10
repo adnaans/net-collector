@@ -7,6 +7,9 @@ Docker, Grafana
 (Dependecies, should all be installable via pip):  
 enum34, futures, grpcio, potsdb, protobuf, six, scapy
 
+(Server):
+Node.js, Express.js, Socket.io
+
 ### Run OpenTSDB
 ```sh
     docker run -p 4242:4242 petergrace/opentsdb-docker

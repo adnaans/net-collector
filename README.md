@@ -1,13 +1,13 @@
 # Network Collector
 
 ### Prerequisites
-(For storage model):  
+For storage model:  
 > Docker, Grafana 
 
-(Dependecies, should all be installable via pip):  
+Dependecies, should all be installable via pip:  
 > enum34, futures, grpcio, potsdb, protobuf, six, scapy
 
-(Server):
+Server:
 > Node.js, Express.js, Socket.io
 
 ### Run OpenTSDB

@@ -101,7 +101,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             yield response
 
         print "Streaming done!"
-        queueus.remove(q)
+        queues.remove(q)
 
 def serve():
     parser = argparse.ArgumentParser()

@@ -43,7 +43,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
         #initiate an empty pathtree for storing updates from the probes
         self.ptree = Branch() 
 
-    def filterAndPackage(self, notif):
+    def filterAndPackage(self, notif): 
+        #takes packet & returns pair of ip strings (src, dst)
         updates = notif.update
         for u in updates: 
             packet =pkt_pb2.Packet()
@@ -53,7 +54,8 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             fixedUpdate = pkt_pb2.IpPair(src=src, dest=dst)
             return fixedUpdate
 
-    def stream(self, stub, request_iterator):  
+    def stream(self, stub, request_iterator): 
+        #thread to stream from a probe 
         for response in stub.Subscribe(request_iterator): 
             if response.update:
                 processingQ.put(self.filterAndPackage(response.update)) 
@@ -61,6 +63,7 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
                 pass
 
     def processThatQ(self): 
+        #processing thread which pulls from a queue & aggregates
         logger.info("thread to aggregate off collection q called.")
         PAIR_LIST = []
         nextId = 0
@@ -69,17 +72,17 @@ class CollectorServicer(gnmi_pb2_grpc.gNMIServicer):
             try:
                 pkgdPkt = processingQ.get(timeout=5) #block for at most 5 seconds
                 PAIR_LIST.append(pkgdPkt)
-                if len(PAIR_LIST)>=500:
+                if len(PAIR_LIST)>=500: #send if batch size reaches 500
                     send = True 
             except Queue.Empty:
-                # send what we have so far if we have a timeout in q.get()
+                # or send what we have so far if we have a timeout in q.get()
                 if len(PAIR_LIST) > 0:
                     send = True
             if send:
                 print datetime.now(), "sending batch of size:", len(PAIR_LIST)
-                batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST, id=nextId)
+                batch = pkt_pb2.IpPairBatch(ip=PAIR_LIST, id=nextId) #make batch w/ list of pairs & unique id
                 nextId += 1
-                for q in queues:
+                for q in queues: #for each subscriber q (only 1) 
                     q.put(batch)
                 PAIR_LIST = []
 
@@ -152,7 +155,7 @@ def serve():
         channel2 = grpc.insecure_channel(device2_ip + ":" + str(device2_port))
         stub2 = gnmi_pb2_grpc.gNMIStub(channel2)
 
-    #start streaming
+    #start threads, mark as daemons
     stubs = [stub1, stub2]
     threads = []
     for stub in stubs: #sends dummy iter to probe.

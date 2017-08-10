@@ -31,18 +31,16 @@ host='localhost'
 port=9030
 time_frequency = 1
 
-#gNMI service which provides all rpc calls for gNMI client 
+
 class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
     
     def __init__(self):
-       # createStreams()
        pass
 
-    def createStreams():
-        pass
-
     def getPacketData(self):
-        packet = scapy.sniff(iface="eth1",count=1)[0]
+        #sniff one packet on eth1 interface
+        packet = scapy.sniff(iface="eth1",count=1)[0] 
+        #take all attributes of scapy packet & put into protobuf model if there
         if packet:
           if scapy.Ether in packet:
               ethernet = pkt_pb2.Ethernet(dst=packet[scapy.Ether].dst, src=packet[scapy.Ether].src, type=packet[scapy.Ether].type)
@@ -67,9 +65,9 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
               raw = None
           gnmiPacket = pkt_pb2.Packet(e=ethernet, i=ipp, t=tcp, r=raw)
           any_msg = any_pb2.Any()
-          any_msg.Pack(gnmiPacket)
+          any_msg.Pack(gnmiPacket) #send Packet message through google.protobuf.Any
           typedVal = gnmi_pb2.TypedValue(any_val=any_msg)
-          update = gnmi_pb2.Update(val=typedVal)
+          update = gnmi_pb2.Update(val=typedVal) 
           return update
 
     def Subscribe(self, request_iterator, context): 
@@ -79,7 +77,7 @@ class ProbeServicer(gnmi_pb2_grpc.gNMIServicer):
             update_msg.append(self.getPacketData())
             tm = int(time.time() * 1000)
             notif = gnmi_pb2.Notification(timestamp=tm, update=update_msg)
-            print "sent a response."
+            print "sent an update."
             yield gnmi_pb2.SubscribeResponse(update=notif)
         print "Streaming done: close channel"
 

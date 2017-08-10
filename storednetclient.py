@@ -55,7 +55,10 @@ def saveToTSDB(ptg, response):
     logger.debug("send to openTSDB: metric: %s, value: %s" %(path_metric, ptg))
 
 ipCache = {}
-def lookup(ip):
+def lookup(ip): 
+    #returns whether a certain IP address "is bad" or not.
+    #dict ipCache of previously encountered IP addresses and whether
+    #they are bad or not. 
     if ip not in ipCache:
         is_bad = False
         hostname = "none"
@@ -76,24 +79,24 @@ def processPacket(response):
         path_metric = encodePath(update.path.elem)
         tm = response.update.timestamp
         batch = pkt_pb2.IpPairBatch()
-        update.val.any_val.Unpack(batch)
+        update.val.any_val.Unpack(batch) #get batch of IP address pairs from update
         print datetime.datetime.now(), "received batch", batch.id
         badcounter = 0
         for pair in batch.ip: 
             src_bad = lookup(pair.src)
             dst_bad = lookup(pair.dest)
-            if src_bad or dst_bad:
+            if src_bad or dst_bad: #count as a "bad packet" if src/dst strings are bad
                 badcounter += 1
         print badcounter
-        ptg = 100.0 * badcounter / len(batch.ip)
+        ptg = 100.0 * badcounter / len(batch.ip) #calculate percentage of bad packets
         if ptg > 8:
             print("DECISION: Back to work!", ptg)
             decision=True
         else:
             print("DECISION: Keep working...", ptg)
             decision=False
-        saveToTSDB(ptg, response)
-        requests.post('http://localhost:3001/post', json = { 'decision' : decision })
+        saveToTSDB(ptg, response) #save percentage to time series database
+        requests.post('http://localhost:3001/post', json = { 'decision' : decision }) #trigger display response
         badcounter = 0
 
 def get(stub, path_str, metadata):
@@ -108,12 +111,11 @@ def subscribe(stub, path_str, mode, metadata):
     """Subscribe and echo the stream"""
     logger.info("start to subscrib path: %s in %s mode" % (path_str, mode))
     subscribe_request = pyopenconfig.resources.make_subscribe_request(path_str=path_str, mode=mode)
-    #iterator issue
-    i = 0
+    i = 0 #number of updates (indiv. packets) streamed
     try:
         for response in stub.Subscribe(subscribe_request, metadata=metadata):
             processPacket(response)
-            i += 300
+            i += 500 
             nums = i
     except grpc.framework.interfaces.face.face.AbortionError, error: # pylint: disable=catching-non-exception
         if error.code == grpc.StatusCode.OUT_OF_RANGE and error.details == 'EOF':
